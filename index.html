@@ -90,6 +90,36 @@
   /* Layout */
   .layout { display: grid; grid-template-columns: 280px 1fr; max-width: 1440px; margin: 0 auto; min-height: 100vh; }
 
+  /* Mobile Top Navigation Bar (Hidden on Desktop) */
+  .mobile-nav-bar {
+    display: none;
+    position: sticky; top: 0; z-index: 40;
+    height: 56px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border-soft);
+    padding: 0 16px;
+    align-items: center; justify-content: space-between;
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .mobile-nav-bar .brand-mob {
+    font-weight: 800; font-size: 1.05rem; color: var(--text-heading);
+    display: flex; align-items: center; gap: 8px; text-decoration: none;
+  }
+  .mobile-nav-bar .brand-mob .logo-badge {
+    background: var(--accent-gradient); color: #fff; font-size: .68rem; font-weight: 800;
+    padding: 2px 6px; border-radius: 4px; text-transform: uppercase;
+  }
+  .mobile-nav-actions { display: flex; align-items: center; gap: 8px; }
+  .mob-icon-btn {
+    background: var(--panel-2); border: 1px solid var(--border);
+    color: var(--text); border-radius: var(--radius-sm);
+    width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; cursor: pointer; transition: all .15s ease;
+  }
+  .mob-icon-btn:hover { background: var(--panel-hover); border-color: var(--accent); color: var(--text-heading); }
+
   /* Sidebar */
   aside {
     position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto;
@@ -99,6 +129,20 @@
     scrollbar-color: var(--border) transparent;
     transition: background-color .2s ease, border-color .2s ease;
   }
+  .sidebar-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+  }
+  .sidebar-header-text { flex: 1; }
+  .sidebar-close-btn {
+    display: none;
+    background: var(--panel-2); border: 1px solid var(--border);
+    color: var(--muted); border-radius: var(--radius-sm);
+    width: 34px; height: 34px; font-size: 1rem; line-height: 1;
+    align-items: center; justify-content: center; cursor: pointer;
+    transition: all .15s ease; margin-left: 8px;
+  }
+  .sidebar-close-btn:hover { color: var(--text-heading); border-color: var(--accent); }
+
   aside .brand { font-weight: 800; font-size: 1.15rem; color: var(--text-heading); display: flex; align-items: center; gap: 8px; }
   aside .brand .logo-badge {
     background: var(--accent-gradient); color: #fff; font-size: .7rem; font-weight: 800;
@@ -113,37 +157,45 @@
   /* Theme Switcher */
   .theme-switch {
     display: flex; align-items: center; justify-content: space-between;
-    width: 100%; padding: 8px 12px; margin-bottom: 16px;
+    width: 100%; min-height: 40px; padding: 8px 12px; margin-bottom: 16px;
     background: var(--panel-2); border: 1px solid var(--border);
     border-radius: var(--radius-sm); color: var(--text);
-    font-family: var(--sans); font-size: .82rem; font-weight: 600;
+    font-family: var(--sans); font-size: .84rem; font-weight: 600;
     cursor: pointer; transition: all .15s ease;
   }
   .theme-switch:hover { background: var(--panel-hover); border-color: var(--accent); }
   .theme-switch .theme-icon { font-size: 1.05rem; }
 
   aside nav a {
-    display: block; color: var(--muted); font-size: .83rem; padding: 6px 10px;
-    border-radius: var(--radius-sm); margin: 2px 0; transition: all .15s ease;
+    display: flex; align-items: center; color: var(--muted); font-size: .85rem; padding: 8px 10px;
+    min-height: 38px; border-radius: var(--radius-sm); margin: 2px 0; transition: all .15s ease;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   aside nav a:hover { background: var(--panel); color: var(--text-heading); text-decoration: none; }
   aside nav a.active { color: var(--text-heading); background: var(--panel-2); font-weight: 600; border-left: 3px solid var(--accent); }
   aside nav .grp { color: #5f7086; font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; font-weight: 700; margin: 20px 10px 6px; }
 
+  /* Backdrop Overlay */
+  .sidebar-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 90;
+    opacity: 0; pointer-events: none; transition: opacity .25s ease;
+    backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+  }
+  .sidebar-backdrop.active { opacity: 1; pointer-events: auto; }
+
   /* Main */
-  main { padding: 40px 52px 140px; max-width: var(--maxw); }
+  main { padding: 40px 52px 140px; max-width: var(--maxw); min-width: 0; }
 
   /* Hero & Disclaimers */
   header.hero {
     background: var(--panel);
     border: 1px solid var(--border); border-left: 4px solid var(--accent);
-    border-radius: var(--radius); padding: 32px; margin-bottom: 40px;
+    border-radius: var(--radius); padding: clamp(20px, 4vw, 32px); margin-bottom: 32px;
     box-shadow: var(--shadow);
     transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease;
   }
-  header.hero h1 { margin: 0 0 10px; font-size: 2rem; color: var(--text-heading); line-height: 1.3; }
-  header.hero p { margin: 0; color: var(--muted); font-size: 1.05rem; }
+  header.hero h1 { margin: 0 0 10px; font-size: clamp(1.4rem, 4vw, 2rem); color: var(--text-heading); line-height: 1.3; }
+  header.hero p { margin: 0; color: var(--muted); font-size: clamp(.92rem, 2.5vw, 1.05rem); }
   .badges { margin-top: 18px; display: flex; gap: 8px; flex-wrap: wrap; }
   .badge {
     font-size: .74rem; padding: 4px 12px; border-radius: 999px;
@@ -155,22 +207,23 @@
   /* License Banner */
   .license-banner {
     background: rgba(77,156,247,.08); border: 1px solid rgba(77,156,247,.25);
-    border-radius: var(--radius); padding: 16px 20px; margin-bottom: 40px; font-size: .88rem; color: var(--text);
+    border-radius: var(--radius); padding: clamp(14px, 3vw, 18px) clamp(16px, 3vw, 20px);
+    margin-bottom: 36px; font-size: .88rem; color: var(--text);
   }
   .license-banner b { color: var(--text-heading); }
 
   /* Section styling */
-  section { margin-bottom: 64px; scroll-margin-top: 24px; }
+  section { margin-bottom: 56px; scroll-margin-top: 72px; }
   h2 {
-    position: relative; font-size: 1.5rem; margin: 0 0 20px; padding-left: 16px; line-height: 1.4; color: var(--text-heading);
+    position: relative; font-size: clamp(1.2rem, 3.5vw, 1.5rem); margin: 0 0 18px; padding-left: 16px; line-height: 1.4; color: var(--text-heading);
   }
   h2::before {
     content: ""; position: absolute; left: 0; top: .18em; bottom: .18em; width: 4px;
     border-radius: 4px; background: var(--accent-gradient);
   }
-  h3 { font-size: 1.14rem; margin: 32px 0 12px; color: var(--text-heading); }
+  h3 { font-size: clamp(1.05rem, 3vw, 1.14rem); margin: 28px 0 12px; color: var(--text-heading); }
   h4 { font-size: .98rem; margin: 20px 0 8px; color: var(--accent); }
-  p { margin: 12px 0; }
+  p { margin: 12px 0; word-break: break-word; }
   ul, ol { margin: 12px 0; padding-left: 24px; }
   li { margin: 6px 0; }
   b { color: var(--text-heading); }
@@ -189,24 +242,30 @@
     margin: 0; padding: 34px 18px 18px; overflow-x: auto;
     font-family: var(--mono);
     font-size: .85rem; line-height: 1.7; color: #e2e8f0;
+    -webkit-overflow-scrolling: touch;
   }
   .code pre code { font-family: inherit; }
   .copy {
     position: absolute; top: 8px; right: 10px; font-size: .72rem;
     background: rgba(255,255,255,.1); color: #cbd5e1; border: 1px solid rgba(255,255,255,.15);
-    border-radius: var(--radius-sm); padding: 3px 10px; cursor: pointer; transition: all .15s;
-    font-family: var(--sans); font-weight: 500;
+    border-radius: var(--radius-sm); padding: 4px 10px; min-height: 28px; cursor: pointer; transition: all .15s;
+    font-family: var(--sans); font-weight: 500; z-index: 2;
   }
   .copy:hover { color: #fff; border-color: var(--accent); background: rgba(77,156,247,.3); }
   .copy.done { color: var(--green); border-color: var(--green); background: rgba(62,207,142,.2); }
   code.inline {
     background: var(--panel-2); border: 1px solid var(--border-soft); border-radius: 5px;
     padding: 2px 7px; font-size: .86em; font-family: var(--mono); color: var(--text);
+    word-break: break-all;
   }
 
   /* Tables */
-  .tbl-wrap { overflow-x: auto; margin: 18px 0; border: 1px solid var(--border-soft); border-radius: var(--radius); background: var(--panel); box-shadow: var(--card-shadow); }
-  table { border-collapse: collapse; width: 100%; font-size: .88rem; }
+  .tbl-wrap {
+    overflow-x: auto; margin: 18px 0; border: 1px solid var(--border-soft); border-radius: var(--radius);
+    background: var(--panel); box-shadow: var(--card-shadow);
+    -webkit-overflow-scrolling: touch;
+  }
+  table { border-collapse: collapse; width: 100%; min-width: 540px; font-size: .88rem; }
   th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--border-soft); vertical-align: top; }
   th { background: var(--panel-2); color: var(--text-heading); font-weight: 600; white-space: nowrap; }
   tbody tr:nth-child(even) td { background: var(--tbl-zebra); }
@@ -227,7 +286,10 @@
   .note b, .warn b, .tip b, .danger b, .outcome b { color: var(--text-heading); }
 
   /* Flow Diagram */
-  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 18px 0; padding: 14px; background: var(--panel); border: 1px solid var(--border-soft); border-radius: var(--radius); box-shadow: var(--card-shadow); }
+  .flow {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 18px 0; padding: 14px;
+    background: var(--panel); border: 1px solid var(--border-soft); border-radius: var(--radius); box-shadow: var(--card-shadow);
+  }
   .flow .step {
     background: var(--panel-2); border: 1px solid var(--border); border-radius: 7px;
     padding: 6px 14px; font-size: .82rem; font-family: var(--mono); color: var(--text-heading); font-weight: 600;
@@ -261,8 +323,8 @@
   .card p:last-child, .card ul:last-child { margin-bottom: 0; }
 
   .search {
-    width: 100%; padding: 13px 18px; border-radius: var(--radius); border: 1px solid var(--border);
-    background: var(--panel); color: var(--text); margin: 18px 0 10px; font-size: .92rem;
+    width: 100%; padding: 13px 16px; border-radius: var(--radius); border: 1px solid var(--border);
+    background: var(--panel); color: var(--text); margin: 18px 0 10px; font-size: 1rem;
     font-family: var(--sans); box-shadow: var(--card-shadow);
   }
   .search:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(77,156,247,.15); }
@@ -289,8 +351,8 @@
     margin: 16px 0; overflow: hidden; box-shadow: var(--card-shadow);
   }
   details.ex > summary {
-    cursor: pointer; padding: 16px 20px; font-weight: 600; color: var(--text-heading); list-style: none;
-    display: flex; align-items: center; gap: 12px; font-size: .96rem;
+    cursor: pointer; padding: 16px 18px; font-weight: 600; color: var(--text-heading); list-style: none;
+    display: flex; align-items: center; gap: 10px; font-size: .95rem; min-height: 48px;
   }
   details.ex > summary::-webkit-details-marker { display: none; }
   details.ex > summary::after { content: "▸"; color: var(--accent); margin-left: auto; font-size: 1.1rem; transition: transform .2s; }
@@ -298,12 +360,13 @@
   details.ex > summary .tag {
     font-size: .7rem; font-weight: 700; padding: 3px 10px; border-radius: 999px;
     background: var(--badge-bg); border: 1px solid var(--border); color: var(--muted);
+    white-space: nowrap;
   }
   details.ex > summary .tag.new { color: var(--green); border-color: var(--green); background: rgba(62,207,142,.12); }
   details.ex > summary .tag.old { color: var(--amber); border-color: var(--amber); background: rgba(245,166,35,.12); }
   details.ex > summary .tag.bug { color: var(--red); border-color: var(--red); background: rgba(247,85,85,.12); }
   details.ex > summary .tag.idea { color: var(--accent-2); border-color: var(--accent-2); background: rgba(132,117,255,.12); }
-  details.ex .body { padding: 4px 20px 24px; border-top: 1px solid var(--border-soft); }
+  details.ex .body { padding: 4px 18px 24px; border-top: 1px solid var(--border-soft); }
   details.ex h4 { margin-top: 20px; }
 
   /* Legal Notice Box */
@@ -311,7 +374,7 @@
     background: var(--panel);
     border: 1px solid var(--border-soft);
     border-radius: var(--radius);
-    padding: 22px 24px;
+    padding: clamp(16px, 3vw, 22px) clamp(16px, 3vw, 24px);
     margin-top: 32px;
     font-size: .83rem;
     color: var(--muted);
@@ -338,29 +401,93 @@
   footer a { color: var(--muted); text-decoration: underline; }
   footer a:hover { color: var(--text-heading); }
 
-  .menu-btn { display: none; }
+  /* Floating Back to Top Button */
+  .back-to-top {
+    position: fixed; bottom: 24px; right: 24px; z-index: 50;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--panel); border: 1px solid var(--border);
+    color: var(--text-heading); font-size: 1.2rem; font-weight: bold;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: 0 6px 20px rgba(0,0,0,.25);
+    opacity: 0; transform: translateY(16px); pointer-events: none;
+    transition: all .25s ease;
+  }
+  .back-to-top.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  .back-to-top:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* Responsive Breakpoints */
   @media (max-width: 960px) {
     .layout { grid-template-columns: 1fr; }
-    aside { display: none; position: fixed; z-index: 50; width: 280px; box-shadow: 8px 0 24px rgba(0,0,0,.6); }
-    aside.open { display: block; }
-    main { padding: 28px 20px 100px; }
-    .menu-btn {
-      display: inline-flex; position: fixed; bottom: 24px; right: 24px; z-index: 60;
-      background: var(--accent); color: #fff; border: none; border-radius: 999px;
-      padding: 14px 22px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 24px rgba(0,0,0,.4);
+    .mobile-nav-bar { display: flex; }
+    
+    aside {
+      position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
+      width: min(320px, 85vw); height: 100dvh;
+      box-shadow: 12px 0 36px rgba(0,0,0,.5);
+      transform: translateX(-100%);
+      transition: transform .28s cubic-bezier(0.4, 0, 0.2, 1);
+      padding-top: max(20px, env(safe-area-inset-top));
+      padding-bottom: max(30px, env(safe-area-inset-bottom));
+      border-right: 1px solid var(--border);
     }
+    aside.open { transform: translateX(0); }
+    .sidebar-close-btn { display: inline-flex; }
+    
+    main { padding: 24px 20px 100px; }
+  }
+
+  @media (max-width: 640px) {
+    main { padding: 18px 14px 80px; }
+    ul, ol { padding-left: 18px; }
+    
+    ol.steps > li { padding: 12px 0 12px 44px; }
+    ol.steps > li::before { width: 28px; height: 28px; font-size: .8rem; top: 12px; }
+    
+    .grid, .do-dont { grid-template-columns: 1fr; }
+    .flow { gap: 6px; padding: 10px; }
+    .flow .step { padding: 5px 10px; font-size: .76rem; }
+    .flow .arrow { font-size: .95rem; }
+    
+    details.ex > summary { font-size: .9rem; gap: 8px; flex-wrap: wrap; }
+    .code pre { font-size: .8rem; padding: 36px 12px 12px; }
+    
+    .back-to-top { bottom: 18px; right: 18px; width: 40px; height: 40px; font-size: 1.1rem; }
   }
 </style>
 </head>
 <body>
+<!-- Mobile Top Header Bar -->
+<header class="mobile-nav-bar" id="mobile-nav-bar">
+  <a href="#" class="brand-mob">
+    <span>Spec Kit Guide</span>
+    <span class="logo-badge">v2</span>
+  </a>
+  <div class="mobile-nav-actions">
+    <button class="mob-icon-btn" id="theme-toggle-mob" type="button" aria-label="Toggle Dark and Light Mode" title="สลับโหมดมืด/สว่าง">
+      <span id="theme-icon-mob">🌙</span>
+    </button>
+    <button class="mob-icon-btn" id="menu-btn-top" type="button" aria-label="Open Navigation Menu" title="เปิดสารบัญ">
+      ☰
+    </button>
+  </div>
+</header>
+
+<!-- Backdrop Overlay for Mobile Drawer -->
+<div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
 <div class="layout">
 
-  <aside id="sidebar">
-    <div class="brand">
-      <span>Spec Kit Guide</span>
-      <span class="logo-badge">v2</span>
+  <aside id="sidebar" aria-label="Main Navigation">
+    <div class="sidebar-header">
+      <div class="sidebar-header-text">
+        <div class="brand">
+          <span>Spec Kit Guide</span>
+          <span class="logo-badge">v2</span>
+        </div>
+        <div class="sub">คู่มือภาษาไทยเพื่อการศึกษาและการใช้งานจริง</div>
+      </div>
+      <button class="sidebar-close-btn" id="sidebar-close-btn" type="button" aria-label="Close navigation menu">✕</button>
     </div>
-    <div class="sub">คู่มือภาษาไทยเพื่อการศึกษาและการใช้งานจริง</div>
     <div class="license-tag">MIT Open Source License</div>
 
     <!-- Theme Switcher Button -->
@@ -1152,39 +1279,42 @@ specify extension update</code></pre></div>
   </main>
 </div>
 
-<button class="menu-btn" id="menu-btn" aria-label="Toggle Navigation Menu">สารบัญ</button>
+<button class="back-to-top" id="back-to-top" type="button" aria-label="เลื่อนขึ้นด้านบน" title="เลื่อนขึ้นด้านบน">↑</button>
 
 <script>
-  // Theme Switcher Logic
+  // Theme Switcher Logic (Synchronized between Sidebar and Mobile Header)
   var themeToggleBtn = document.getElementById('theme-toggle');
+  var themeToggleMob = document.getElementById('theme-toggle-mob');
   var themeLabel = document.getElementById('theme-label');
   var themeIcon = document.getElementById('theme-icon');
+  var themeIconMob = document.getElementById('theme-icon-mob');
 
   function updateThemeUI(theme) {
-    if (theme === 'light') {
-      if (themeLabel) themeLabel.textContent = 'โหมด: สว่าง ☀️';
-      if (themeIcon) themeIcon.textContent = '☀️';
-    } else {
-      if (themeLabel) themeLabel.textContent = 'โหมด: มืด 🌙';
-      if (themeIcon) themeIcon.textContent = '🌙';
-    }
+    var isLight = (theme === 'light');
+    var labelText = isLight ? 'โหมด: สว่าง ☀️' : 'โหมด: มืด 🌙';
+    var iconText = isLight ? '☀️' : '🌙';
+
+    if (themeLabel) themeLabel.textContent = labelText;
+    if (themeIcon) themeIcon.textContent = iconText;
+    if (themeIconMob) themeIconMob.textContent = iconText;
+  }
+
+  function toggleTheme() {
+    var current = document.documentElement.getAttribute('data-theme') || 'dark';
+    var next = (current === 'dark') ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try {
+      localStorage.setItem('speckit-theme', next);
+    } catch (e) {}
+    updateThemeUI(next);
   }
 
   // Initialize UI based on current theme attribute
   var currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
   updateThemeUI(currentTheme);
 
-  if (themeToggleBtn) {
-    themeToggleBtn.addEventListener('click', function() {
-      var current = document.documentElement.getAttribute('data-theme') || 'dark';
-      var next = current === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      try {
-        localStorage.setItem('speckit-theme', next);
-      } catch (e) {}
-      updateThemeUI(next);
-    });
-  }
+  if (themeToggleBtn) themeToggleBtn.addEventListener('click', toggleTheme);
+  if (themeToggleMob) themeToggleMob.addEventListener('click', toggleTheme);
 
   // Copy buttons for code blocks
   document.querySelectorAll('.code').forEach(function (block) {
@@ -1194,6 +1324,7 @@ specify extension update</code></pre></div>
     btn.className = 'copy';
     btn.type = 'button';
     btn.textContent = 'คัดลอก';
+    btn.setAttribute('aria-label', 'คัดลอกโค้ด');
     btn.addEventListener('click', function () {
       var text = pre.innerText;
       navigator.clipboard.writeText(text).then(function () {
@@ -1210,27 +1341,75 @@ specify extension update</code></pre></div>
     block.appendChild(btn);
   });
 
-  // Active TOC highlight on scroll
+  // Mobile Drawer & Backdrop Controls
+  var sb = document.getElementById('sidebar');
+  var backdrop = document.getElementById('sidebar-backdrop');
+  var menuBtnTop = document.getElementById('menu-btn-top');
+  var sidebarCloseBtn = document.getElementById('sidebar-close-btn');
+
+  function openSidebar() {
+    if (!sb) return;
+    sb.classList.add('open');
+    if (backdrop) backdrop.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeSidebar() {
+    if (!sb) return;
+    sb.classList.remove('open');
+    if (backdrop) backdrop.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  if (menuBtnTop) menuBtnTop.addEventListener('click', openSidebar);
+  if (sidebarCloseBtn) sidebarCloseBtn.addEventListener('click', closeSidebar);
+  if (backdrop) backdrop.addEventListener('click', closeSidebar);
+
+  // Close drawer when clicking TOC links or pressing Escape
+  if (sb) {
+    sb.addEventListener('click', function (e) {
+      if (e.target.tagName === 'A') closeSidebar();
+    });
+  }
+  window.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && sb && sb.classList.contains('open')) {
+      closeSidebar();
+    }
+  });
+
+  // Active TOC highlight on scroll & Back-to-Top Button
   var links = Array.prototype.slice.call(document.querySelectorAll('#toc a'));
   var sections = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+  var backToTopBtn = document.getElementById('back-to-top');
+
   function onScroll() {
-    var pos = window.scrollY + 140;
+    var scrollY = window.scrollY || window.pageYOffset;
+    
+    // Back to top visibility
+    if (backToTopBtn) {
+      if (scrollY > 380) {
+        backToTopBtn.classList.add('show');
+      } else {
+        backToTopBtn.classList.remove('show');
+      }
+    }
+
+    // TOC Active state
+    var headerOffset = (window.innerWidth <= 960) ? 90 : 140;
+    var pos = scrollY + headerOffset;
     var current = 0;
     for (var i = 0; i < sections.length; i++) {
       if (sections[i] && sections[i].offsetTop <= pos) current = i;
     }
     links.forEach(function (a, i) { a.classList.toggle('active', i === current); });
   }
+
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  // Mobile menu toggle
-  var mb = document.getElementById('menu-btn');
-  var sb = document.getElementById('sidebar');
-  if (mb && sb) {
-    mb.addEventListener('click', function () { sb.classList.toggle('open'); });
-    sb.addEventListener('click', function (e) {
-      if (e.target.tagName === 'A') sb.classList.remove('open');
+  if (backToTopBtn) {
+    backToTopBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
 
