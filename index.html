@@ -415,6 +415,98 @@
   .back-to-top.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
   .back-to-top:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
 
+  /* Workflow Mode Switcher Tabs */
+  .wf-tabs {
+    display: flex; gap: 8px; margin: 20px 0 16px;
+    background: var(--panel-2); padding: 6px; border-radius: var(--radius);
+    border: 1px solid var(--border-soft); overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .wf-tab-btn {
+    flex: 1; min-width: 170px; padding: 10px 16px; border-radius: var(--radius-sm);
+    border: 1px solid transparent; background: transparent; color: var(--muted);
+    font-family: var(--sans); font-size: .88rem; font-weight: 600; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    transition: all .2s ease; white-space: nowrap;
+  }
+  .wf-tab-btn:hover { color: var(--text-heading); background: var(--panel-hover); }
+  .wf-tab-btn.active {
+    background: var(--panel); color: var(--text-heading);
+    border-color: var(--border); box-shadow: var(--card-shadow);
+  }
+  .wf-tab-btn .tag-count {
+    font-size: .72rem; padding: 2px 8px; border-radius: 999px;
+    background: var(--panel-2); color: var(--muted); font-weight: 700;
+  }
+  .wf-tab-btn.active .tag-count { background: var(--accent-gradient); color: #fff; }
+  .wf-panel { display: none; }
+  .wf-panel.active { display: block; animation: wfFadeIn .25s ease-out; }
+  @keyframes wfFadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Workflow Flow Badges & Containers */
+  .flow-track {
+    background: var(--panel); border: 1px solid var(--border-soft); border-radius: var(--radius);
+    padding: 20px 22px; margin: 18px 0; box-shadow: var(--card-shadow);
+  }
+  .flow-track-title {
+    font-size: 1rem; font-weight: 700; color: var(--text-heading); margin-bottom: 14px;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  }
+  .flow.interactive {
+    background: var(--panel-2); border: 1px solid var(--border-soft); padding: 14px;
+    margin: 14px 0 18px; border-radius: var(--radius-sm);
+  }
+  .flow .step.gate {
+    border-color: rgba(62,207,142,.4); background: rgba(62,207,142,.08); color: var(--green);
+  }
+  .flow .step.primary {
+    border-color: rgba(77,156,247,.4); background: rgba(77,156,247,.08); color: var(--accent);
+  }
+  .flow .step.optional {
+    border-style: dashed; border-color: rgba(245,166,35,.4); color: var(--amber);
+  }
+  .wf-badge {
+    font-size: .72rem; font-weight: 700; padding: 2px 8px; border-radius: 4px;
+    display: inline-flex; align-items: center; gap: 4px; letter-spacing: .02em;
+  }
+  .wf-badge.req { background: rgba(77,156,247,.12); color: var(--accent); border: 1px solid rgba(77,156,247,.25); }
+  .wf-badge.gate { background: rgba(62,207,142,.12); color: var(--green); border: 1px solid rgba(62,207,142,.25); }
+  .wf-badge.opt { background: rgba(245,166,35,.12); color: var(--amber); border: 1px solid rgba(245,166,35,.25); }
+  .wf-badge.hot { background: rgba(247,85,85,.12); color: var(--red); border: 1px solid rgba(247,85,85,.25); }
+  .wf-badge.done { background: rgba(132,117,255,.12); color: var(--accent-2); border: 1px solid rgba(132,117,255,.25); }
+
+  /* Command Deep Dive Specification Metadata Grid */
+  .cmd-card-wrap {
+    background: var(--panel); border: 1px solid var(--border-soft); border-radius: var(--radius);
+    padding: 22px 24px; margin: 26px 0; box-shadow: var(--card-shadow);
+    transition: border-color .15s ease;
+  }
+  .cmd-card-wrap:hover { border-color: var(--border); }
+  .cmd-card-head {
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+    margin-bottom: 10px;
+  }
+  .cmd-card-head h3 { margin: 0; font-size: 1.15rem; color: var(--text-heading); }
+  .cmd-meta-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 10px; margin: 14px 0 16px;
+  }
+  .cmd-meta-item {
+    background: var(--panel-2); border: 1px solid var(--border-soft);
+    border-radius: var(--radius-sm); padding: 10px 13px; font-size: .83rem;
+  }
+  .cmd-meta-label {
+    font-size: .68rem; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--muted); font-weight: 700; margin-bottom: 3px; display: flex; align-items: center; gap: 5px;
+  }
+  .cmd-meta-val { color: var(--text-heading); font-weight: 500; word-break: break-word; }
+  .cmd-meta-val code { font-family: var(--mono); font-size: .9em; }
+  .gate-note {
+    background: rgba(62,207,142,.07); border: 1px solid rgba(62,207,142,.25); border-left: 4px solid var(--green);
+    border-radius: var(--radius-sm); padding: 10px 14px; font-size: .86rem; margin: 12px 0; color: var(--text);
+  }
+  .gate-note b { color: var(--green); }
+
   /* Responsive Breakpoints */
   @media (max-width: 960px) {
     .layout { grid-template-columns: 1fr; }
@@ -503,8 +595,8 @@
       <a href="#commands-types">3. คำสั่ง 2 ประเภท (CLI vs Agent)</a>
       <a href="#quickstart">4. เริ่มต้นโปรเจคใหม่แบบด่วน</a>
       <div class="grp">2. วงจรการทำงานหลัก &amp; การสั่งงาน</div>
-      <a href="#workflow">5. ลำดับขั้นตอนการทำงาน (Workflow)</a>
-      <a href="#agents-cmds">6. เจาะลึกคำสั่ง Agent</a>
+      <a href="#workflow">5. ลำดับขั้นตอนการทำงาน (แบบเต็ม vs แบบย่อ)</a>
+      <a href="#agents-cmds">6. เจาะลึกคำสั่ง Agent (10 คำสั่งหลัก)</a>
       <a href="#tricks">7. เคล็ดลับการเขียน Prompt</a>
       <a href="#best-practices">8. แนวทางปฏิบัติที่ดี (Best Practices)</a>
       <div class="grp">3. สถานการณ์ใช้งานจริง &amp; ตัวอย่าง</div>
@@ -696,85 +788,596 @@ cd my-project</code></pre></div>
 
     <!-- 5. WORKFLOW -->
     <section id="workflow">
-      <h2>5. ลำดับขั้นตอนการทำงาน (Workflow Order)</h2>
-      <p>ลำดับการทำงานมาตรฐานที่แนะนำสำหรับการพัฒนาซอฟต์แวร์:</p>
+      <h2>5. ลำดับขั้นตอนการทำงาน (Workflow Order): แบบเต็ม vs แบบย่อ</h2>
+      <p>หัวใจสำคัญของ <b>Spec-Driven Development (SDD)</b> คือการเปลี่ยนกระบวนการคิดให้มีขั้นตอนที่เป็นระบบ เพื่อให้ AI ทำงานได้อย่างแม่นยำ ไม่หลงทาง และมีหลักฐานตรวจสอบย้อนกลับได้ คุณสามารถเลือกลำดับขั้นตอนให้เหมาะกับขนาดและความเสี่ยงของงานได้ 3 รูปแบบหลัก:</p>
 
-      <div class="flow">
-        <span class="step">constitution</span><span class="arrow">→</span>
-        <span class="step">specify</span><span class="arrow">→</span>
-        <span class="step">clarify</span><span class="arrow">→</span>
-        <span class="step">plan</span><span class="arrow">→</span>
-        <span class="step">checklist</span><span class="arrow">→</span>
-        <span class="step">tasks</span><span class="arrow">→</span>
-        <span class="step">analyze</span><span class="arrow">→</span>
-        <span class="step">implement</span><span class="arrow">→</span>
-        <span class="step">converge</span>
+      <!-- Workflow Mode Switcher Tabs -->
+      <div class="wf-tabs" role="tablist" aria-label="เลือกลำดับการทำงาน">
+        <button class="wf-tab-btn active" type="button" data-target="wf-panel-full" role="tab" aria-selected="true">
+          <span>🛡️ แบบเต็ม (Full Production)</span>
+          <span class="tag-count">9 ขั้นตอน</span>
+        </button>
+        <button class="wf-tab-btn" type="button" data-target="wf-panel-compact" role="tab" aria-selected="false">
+          <span>⚡ แบบย่อ (Compact / Fast-Track)</span>
+          <span class="tag-count">5 ขั้นตอน</span>
+        </button>
+        <button class="wf-tab-btn" type="button" data-target="wf-panel-hotfix" role="tab" aria-selected="false">
+          <span>🔥 แบบด่วนพิเศษ (Express / Hotfix)</span>
+          <span class="tag-count">3-4 ขั้นตอน</span>
+        </button>
       </div>
 
+      <!-- Panel 1: Full Workflow -->
+      <div class="wf-panel active" id="wf-panel-full" role="tabpanel">
+        <div class="flow-track">
+          <div class="flow-track-title">
+            <span>🛡️ เส้นทางเต็ม (Full Production Workflow) — สำหรับงานระบบหลักและ Production</span>
+            <span class="wf-badge gate">4 Quality Gates ครบถ้วน</span>
+          </div>
+          <p>ลำดับวงจรการพัฒนาแบบสมบูรณ์ มีจุดตรวจสอบคุณภาพ (Quality Gates) ทุกระยะเพื่อป้องกันข้อผิดพลาดทางสถาปัตยกรรมและ Logic Drift:</p>
+
+          <div class="flow interactive">
+            <span class="step primary">1. constitution</span><span class="arrow">→</span>
+            <span class="step primary">2. specify</span><span class="arrow">→</span>
+            <span class="step gate">3. clarify 🔍</span><span class="arrow">→</span>
+            <span class="step primary">4. plan</span><span class="arrow">→</span>
+            <span class="step gate">5. checklist 📋</span><span class="arrow">→</span>
+            <span class="step primary">6. tasks</span><span class="arrow">→</span>
+            <span class="step gate">7. analyze 🔬</span><span class="arrow">→</span>
+            <span class="step primary">8. implement</span><span class="arrow">→</span>
+            <span class="step gate">9. converge 🎯</span>
+          </div>
+
+          <div class="grid">
+            <div class="card">
+              <h4>🔍 4 ด่านตรวจคุณภาพ (Quality Gates) ในแบบเต็ม</h4>
+              <ul>
+                <li><b>Gate 1: Clarify</b> — ซักถามเจาะลึก 3-5 ข้อเพื่อกำจัดจุดคลุมเครือในข้อกำหนดก่อนเริ่มวางแผน</li>
+                <li><b>Gate 2: Checklist</b> — สร้างเกณฑ์ตรวจความพร้อมของสเปกโดยมนุษย์ต้องเป็นผู้ Sign-off ก่อนลงมือแตกงาน</li>
+                <li><b>Gate 3: Analyze</b> — ตรวจจับ Drift ข้ามเอกสาร (<code class="inline">spec</code> vs <code class="inline">plan</code> vs <code class="inline">tasks</code>) โดยไม่อ่านหรือแก้โค้ด</li>
+                <li><b>Gate 4: Converge</b> — ตรวจความครบถ้วนสมบูรณ์ของโค้ดเทียบกับสเปกแบบ Append-only ก่อนเปิด PR</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h4>🎯 เหมาะสำหรับสถานการณ์ใด?</h4>
+              <ul>
+                <li>โปรเจคใหม่ตั้งแต่ศูนย์ (Greenfield 0-to-1)</li>
+                <li>ฟีเจอร์หลัก (Core Architecture / Business Domain)</li>
+                <li>ระบบที่มีความสำคัญสูง เช่น ระบบชำระเงิน, ความปลอดภัย, หรือ Authentication</li>
+                <li>งานที่ต้องส่งมอบในทีมขนาดใหญ่ที่มี Code Reviewer หลายคน</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 2: Compact Workflow -->
+      <div class="wf-panel" id="wf-panel-compact" role="tabpanel">
+        <div class="flow-track">
+          <div class="flow-track-title">
+            <span>⚡ เส้นทางย่อ (Compact / Fast-Track SDD) — สำหรับฟีเจอร์ย่อยและงานต่อยอด</span>
+            <span class="wf-badge req">กระชับ รวดเร็ว ตรงจุด</span>
+          </div>
+          <p>วงจรการพัฒนาแบบตัดทอนขั้นตอนที่ไม่จำเป็นออก เน้นความเร็วในการส่งมอบงาน แต่ยังคงรักษากระบวนการ Spec-First เอาไว้ครบถ้วน:</p>
+
+          <div class="flow interactive">
+            <span class="step primary">1. specify</span><span class="arrow">→</span>
+            <span class="step primary">2. plan</span><span class="arrow">→</span>
+            <span class="step primary">3. tasks</span><span class="arrow">→</span>
+            <span class="step primary">4. implement</span><span class="arrow">→</span>
+            <span class="step gate">5. converge 🎯</span>
+          </div>
+
+          <div class="grid">
+            <div class="card">
+              <h4>✂️ ข้ามขั้นตอนใดได้บ้าง และเพราะอะไร?</h4>
+              <ul>
+                <li><b>ข้าม constitution</b> — เนื่องจากมีกฎระเบียบกลางบันทึกอยู่ใน <code class="inline">.specify/memory/constitution.md</code> อยู่แล้ว</li>
+                <li><b>ข้าม clarify</b> — เมื่อผู้พัฒนาและทีมมี Requirement และภาพ UI/Mockup ที่ชัดเจน ไม่มีจุดกำกวม</li>
+                <li><b>ข้าม checklist &amp; analyze</b> — เหมาะกับงานขนาดเล็กถึงปานกลางที่ไม่มีความซับซ้อนข้ามเซอร์วิส</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h4>⚠️ สิ่งที่ห้ามข้ามในแบบย่อ</h4>
+              <ul>
+                <li><b>ห้ามข้าม specify</b> — AI ต้องเข้าใจ "ปัญหาและผลลัพธ์ที่ต้องการ (What &amp; Why)" ก่อนเสมอ</li>
+                <li><b>ห้ามข้าม tasks</b> — ต้องแตกงานเป็นขั้นตอนเล็กๆ เพื่อป้องกัน AI เขียนโค้ดแบบสุ่มหรือตกหล่น</li>
+                <li><b>แนะนำให้รัน converge</b> — เพื่อให้แน่ใจว่างานที่ทำเสร็จครบตาม Scope ย่อจริง</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 3: Express / Hotfix Workflow -->
+      <div class="wf-panel" id="wf-panel-hotfix" role="tabpanel">
+        <div class="flow-track">
+          <div class="flow-track-title">
+            <span>🔥 เส้นทางด่วนพิเศษ (Express / Hotfix Path) — สำหรับงานแก้ด่วนและจุดเล็กๆ</span>
+            <span class="wf-badge hot">Speed Priority</span>
+          </div>
+          <p>สำหรับงานแก้บั๊กจุดเดียว, การเปลี่ยนข้อความ, หรือการปรับแต่งสไตล์ที่ไม่แตะต้องโครงสร้างสถาปัตยกรรม:</p>
+
+          <div class="flow interactive">
+            <span class="step primary">1. specify (สั้น)</span><span class="arrow">→</span>
+            <span class="step optional">2. tasks (1-3 ข้อย่อย)</span><span class="arrow">→</span>
+            <span class="step primary">3. implement</span><span class="arrow">→</span>
+            <span class="step gate">4. converge</span>
+          </div>
+
+          <div class="note"><b>ข้อควรระวังของ Express Path:</b> ใช้เฉพาะเมื่อ <i>ไม่เปลี่ยน Tech Stack, ไม่เพิ่มตารางในฐานข้อมูล และไม่แก้ API Contract เดิม</i> หากงานเริ่มบานปลาย ให้ถอยกลับไปใช้แบบย่อหรือแบบเต็มทันที</div>
+        </div>
+      </div>
+
+      <!-- Comparison Matrix Table -->
+      <h3>ตารางเปรียบเทียบกระบวนการ: แบบเต็ม vs แบบย่อ (Workflow Comparison Matrix)</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ลำดับ &amp; ขั้นตอน</th>
+              <th>คำสั่ง Agent Slash</th>
+              <th>แบบเต็ม (Full)</th>
+              <th>แบบย่อ (Compact)</th>
+              <th>ไฟล์ผลลัพธ์ (Artifacts)</th>
+              <th>หน้าที่หลัก &amp; จุดตรวจสอบ (Role &amp; Gates)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>1. Constitution</b></td>
+              <td><code class="inline">/speckit-constitution</code></td>
+              <td><span class="wf-badge req">จำเป็น (ครั้งแรก)</span></td>
+              <td><span class="wf-badge opt">ใช้ของเดิม</span></td>
+              <td><code class="inline">.specify/memory/constitution.md</code></td>
+              <td>ตั้งกฎเหล็กของโปรเจค เช่น Coding Standards, Testing Policy, Constraints</td>
+            </tr>
+            <tr>
+              <td><b>2. Specify</b></td>
+              <td><code class="inline">/speckit-specify</code></td>
+              <td><span class="wf-badge req">จำเป็น</span></td>
+              <td><span class="wf-badge req">จำเป็น</span></td>
+              <td><code class="inline">specs/&lt;feature&gt;/spec.md</code></td>
+              <td>ระบุ What &amp; Why พฤติกรรมผู้ใช้ และขอบเขต (ห้ามใส่ Tech Stack)</td>
+            </tr>
+            <tr>
+              <td><b>3. Clarify</b></td>
+              <td><code class="inline">/speckit-clarify</code></td>
+              <td><span class="wf-badge gate">Quality Gate 1</span></td>
+              <td><span class="wf-badge opt">ข้ามได้ถ้าสเปกชัด</span></td>
+              <td>อัปเดตลงใน <code class="inline">spec.md</code></td>
+              <td>AI ถามเจาะลึก 3-5 ข้อเพื่อกำจัดจุดคลุมเครือและบันทึกคำตอบกลับลงสเปก</td>
+            </tr>
+            <tr>
+              <td><b>4. Plan</b></td>
+              <td><code class="inline">/speckit-plan</code></td>
+              <td><span class="wf-badge req">จำเป็น</span></td>
+              <td><span class="wf-badge req">จำเป็น</span></td>
+              <td><code class="inline">specs/&lt;feature&gt;/plan.md</code></td>
+              <td>กำหนดสถาปัตยกรรม, Tech Stack, Database Schema และ API Contracts</td>
+            </tr>
+            <tr>
+              <td><b>5. Checklist</b></td>
+              <td><code class="inline">/speckit-checklist</code></td>
+              <td><span class="wf-badge gate">Quality Gate 2</span></td>
+              <td><span class="wf-badge opt">ข้ามได้</span></td>
+              <td><code class="inline">specs/&lt;feature&gt;/checklists/</code></td>
+              <td>Human Sign-off ยืนยันว่า Requirements ผ่านเกณฑ์และอนุมัติให้เริ่มพัฒนา</td>
+            </tr>
+            <tr>
+              <td><b>6. Tasks</b></td>
+              <td><code class="inline">/speckit-tasks</code></td>
+              <td><span class="wf-badge req">จำเป็น</span></td>
+              <td><span class="wf-badge req">จำเป็น</span></td>
+              <td><code class="inline">specs/&lt;feature&gt;/tasks.md</code></td>
+              <td>แตกรายการงานย่อยตามลำดับ Dependency: Setup → Foundation → Stories → Polish</td>
+            </tr>
+            <tr>
+              <td><b>7. Analyze</b></td>
+              <td><code class="inline">/speckit-analyze</code></td>
+              <td><span class="wf-badge gate">Quality Gate 3</span></td>
+              <td><span class="wf-badge opt">ข้ามได้</span></td>
+              <td>Read-only Drift Report</td>
+              <td>ตรวจสอบความสอดคล้องข้ามเอกสาร spec vs plan vs tasks (ไม่อ่าน/แก้โค้ด)</td>
+            </tr>
+            <tr>
+              <td><b>8. Implement</b></td>
+              <td><code class="inline">/speckit-implement</code></td>
+              <td><span class="wf-badge req">จำเป็น</span></td>
+              <td><span class="wf-badge req">จำเป็น</span></td>
+              <td>Source code, Tests &amp; Diffs</td>
+              <td>AI ลงมือเขียนโค้ดและ Unit Tests ตามลำดับใน tasks.md ทีละช่วง</td>
+            </tr>
+            <tr>
+              <td><b>9. Converge</b></td>
+              <td><code class="inline">/speckit-converge</code></td>
+              <td><span class="wf-badge gate">Quality Gate 4</span></td>
+              <td><span class="wf-badge gate">แนะนำอย่างยิ่ง</span></td>
+              <td>Tasks appended หรือ Done</td>
+              <td>ตรวจเทียบโค้ดจริงกับสเปกแบบ Append-only เพิ่ม tasks ที่ตกหล่นจนครบถ้วน</td>
+            </tr>
+            <tr>
+              <td><b>10. Issues (Opt)</b></td>
+              <td><code class="inline">/speckit-taskstoissues</code></td>
+              <td><span class="wf-badge done">ส่วนเสริม</span></td>
+              <td><span class="wf-badge done">ส่วนเสริม</span></td>
+              <td>GitHub Issues บน Repo</td>
+              <td>แปลงรายการงานใน tasks.md ให้เป็น GitHub Issues เพื่อติดตามงานบน Projects</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Decision Guidelines -->
+      <h3>เกณฑ์การตัดสินใจ: เมื่อไหร่ควรใช้แบบเต็ม vs แบบย่อ?</h3>
       <div class="grid">
         <div class="card">
-          <h4>🚀 เส้นทางสั้น (สำหรับฟีเจอร์เล็ก)</h4>
-          <p><code class="inline">specify → plan → tasks → implement → converge</code></p>
-          <p>เหมาะสำหรับการเพิ่มปุ่ม, แก้ไขข้อความ, หรือการเปลี่ยนแปลงขนาดเล็กที่ไม่ซับซ้อน</p>
+          <h4>🛡️ เลือกใช้ "แบบเต็ม" เมื่อ:</h4>
+          <ul>
+            <li>งานมีผลกระทบต่อโครงสร้างข้อมูลหรือโมเดลความปลอดภัย</li>
+            <li>ฟีเจอร์มีความสัมพันธ์แบบผูกโยงกับหลายระบบ (Cross-module Dependency)</li>
+            <li>ความต้องการจาก Product Owner ยังไม่นิ่ง หรือมี Edge Cases ซับซ้อน</li>
+            <li>ทีมต้องการ Audit Trail และเอกสาร Checklist สำหรับการตรวจรับงาน</li>
+          </ul>
         </div>
         <div class="card">
-          <h4>🛡️ เส้นทางเต็ม (สำหรับงาน Production)</h4>
-          <p><code class="inline">constitution → specify → clarify → plan → checklist → tasks → analyze → implement → converge</code></p>
-          <p>มีจุดตรวจสอบคุณภาพ (Quality Gates) ครบถ้วน เพื่อป้องกันข้อผิดพลาดทางสถาปัตยกรรม</p>
+          <h4>⚡ เลือกใช้ "แบบย่อ" เมื่อ:</h4>
+          <ul>
+            <li>เพิ่มหน้า UI ย่อย, แบบฟอร์ม หรือคอมโพเนนต์ที่แยกการทำงานชัดเจน</li>
+            <li>สเปกมีความชัดเจนสูง พร้อม Wireframe หรือ API Contract ที่แน่นอนแล้ว</li>
+            <li>ปรับปรุงประสิทธิภาพ (Performance optimization) ภายในฟังก์ชันเดิม</li>
+            <li>ต้องการสร้าง Prototype หรือทดลองไอเดียแบบจำกัดเวลา (Time-boxed)</li>
+          </ul>
         </div>
       </div>
-      <div class="warn"><b>กฎทอง:</b> รันทีละคำสั่งและ <b>ตรวจสอบผลลัพธ์ของไฟล์ที่สร้างขึ้นก่อนเสมอ</b> อย่ารันคำสั่งทั้งหมดรวดเดียวโดยไม่ตรวจทาน</div>
+
+      <div class="warn"><b>กฎทองของการรันคำสั่ง (Golden Rule):</b> รันทีละคำสั่งและ <b>เปิดตรวจสอบผลลัพธ์ของไฟล์ที่สร้างขึ้นก่อนเสมอ</b> อย่ารันคำสั่งทั้งหมดรวดเดียวโดยไม่ตรวจทาน เพราะหัวใจของ SDD คือการให้มนุษย์เป็นผู้ควบคุมทิศทาง (Human-in-the-loop)</div>
     </section>
 
     <!-- 6. AGENT COMMANDS -->
     <section id="agents-cmds">
-      <h2>6. เจาะลึกคำสั่ง Agent (Step-by-Step)</h2>
+      <h2>6. เจาะลึกรายละเอียดคำสั่ง Agent (Comprehensive Command Guide)</h2>
+      <p>สรุปรายละเอียดการใช้งานของทั้ง 10 คำสั่ง Agent ครอบคลุมไวยากรณ์ (Syntax), ข้อมูลนำเข้าที่ต้องป้อน (Inputs), ไฟล์ผลลัพธ์ที่ได้รับ (Artifacts), จุดตรวจทานคุณภาพ (Review Gate) และตัวอย่างคำสั่งจริง:</p>
 
-      <h3>1. /speckit-constitution — กำหนดกฎเหล็กและมาตรฐานโปรเจค</h3>
-      <p>สร้างไฟล์ <code class="inline">.specify/memory/constitution.md</code> เพื่อเป็นบรรทัดฐานให้ AI อ้างอิงในทุกเฟสถัดไป ทำครั้งเดียวตอนเริ่มต้นโปรเจค</p>
-      <div class="code"><span class="lang">text</span><pre><code>/speckit-constitution โปรเจคนี้เน้น Clean Code, ต้องมี Unit Test ครอบคลุม Business Logic ทุกจุด, ทุก API ต้องมี Input Validation และห้ามเพิ่ม External Library โดยไม่จำเป็น</code></pre></div>
+      <!-- 1. CONSTITUTION -->
+      <div class="cmd-card-wrap" id="cmd-constitution">
+        <div class="cmd-card-head">
+          <h3>1. /speckit-constitution — กำหนดกฎเหล็กและมาตรฐานโปรเจค</h3>
+          <span class="wf-badge req">ตั้งต้นโปรเจค (ทำครั้งเดียว)</span>
+        </div>
+        <p>สร้างเอกสาร <code class="inline">.specify/memory/constitution.md</code> เพื่อเป็นบรรทัดฐานและสัจพจน์ให้ AI อ้างอิงในทุกคำสั่งถัดไป ป้องกันไม่ให้ AI เขียนโค้ดนอกลู่นอกทางหรือแอบเพิ่ม Dependency โดยพลการ</p>
+        
+        <div class="cmd-meta-grid">
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">⌨️ ไวยากรณ์ (Syntax)</div>
+            <div class="cmd-meta-val"><code class="inline">/speckit-constitution &lt;กฎเกณฑ์&gt;</code><br/><code class="inline">/speckit.constitution &lt;กฎ&gt;</code></div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">📥 ข้อมูลที่ต้องป้อน (Inputs)</div>
+            <div class="cmd-meta-val">มาตรฐานโค้ด, นโยบายการเขียนเทส, สถาปัตยกรรมบังคับ, ข้อห้ามเด็ดขาด</div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">📤 ผลลัพธ์ (Artifact)</div>
+            <div class="cmd-meta-val"><code class="inline">.specify/memory/constitution.md</code></div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">🛡️ จุดตรวจทาน (Review Gate)</div>
+            <div class="cmd-meta-val">เปิดอ่านไฟล์ยืนยันว่ากฎมีความเป็นรูปธรรม วัดผลได้ และไม่มีข้อขัดแย้งกัน</div>
+          </div>
+        </div>
 
-      <h3>2. /speckit-specify — ระบุความต้องการ (What &amp; Why)</h3>
-      <p>สร้างเอกสาร <code class="inline">specs/&lt;feature&gt;/spec.md</code> อธิบายว่า <b>กำลังจะทำอะไรและทำไปทำไม</b> โดย <b>⚠️ ห้ามระบุ Tech Stack ในขั้นตอนนี้</b></p>
-      <div class="code"><span class="lang">text</span><pre><code>/speckit-specify สร้างระบบจัดการงานส่วนบุคคล ผู้ใช้สามารถสร้าง บอร์ด Kanban เพิ่มการ์ดงาน ลากย้ายสถานะ และกำหนดวันส่งมอบได้ โดยมีระบบกรองงานตามแท็ก</code></pre></div>
+        <div class="code"><span class="lang">text</span><pre><code>/speckit-constitution มาตรฐานโปรเจค:
+1. Architecture: ใช้ Modular Clean Architecture ห้ามเขียน Business Logic ปนใน Controller
+2. Testing: ทุกฟังก์ชันสำคัญต้องมี Unit Test โดยเน้นครอบคลุม Happy Path และ Edge Cases
+3. Security: ทำ Input Validation ทุก API ด้วย Zod และห้ามพิมพ์ Secret ลงในโค้ดเด็ดขาด
+4. Dependencies: ห้ามติดตั้ง External Library เพิ่มเติมโดยไม่ได้รับอนุญาตชัดเจน</code></pre></div>
+        <div class="tip"><b>Pro Tip:</b> กฎใน Constitution จะถูกแทรกเป็น System Context ในทุกครั้งที่ AI รันคำสั่งอื่น จึงควรเขียนให้กระชับ ชัดเจน และมีน้ำหนักทางสถาปัตยกรรม</div>
+      </div>
 
-      <h3>3. /speckit-clarify — ลดความกำกวมในข้อกำหนด</h3>
-      <p>AI จะถามคำถามเจาะลึกไม่เกิน 5 ข้อต่อรอบ เพื่อความชัดเจนของ Requirement แล้วบันทึกคำตอบกลับลงใน <code class="inline">spec.md</code> สามารถเรียกซ้ำได้หลายรอบ</p>
-      <div class="code"><span class="lang">text</span><pre><code>/speckit-clarify โฟกัสเรื่องสิทธิ์การเข้าถึงบอร์ด: บอร์ดเป็นแบบสาธารณะหรือส่วนตัว และการลบการ์ดต้องมีการยืนยันหรือไม่</code></pre></div>
+      <!-- 2. SPECIFY -->
+      <div class="cmd-card-wrap" id="cmd-specify">
+        <div class="cmd-card-head">
+          <h3>2. /speckit-specify — ระบุความต้องการ (What &amp; Why)</h3>
+          <span class="wf-badge req">จำเป็นทุก Workflow</span>
+        </div>
+        <p>สร้างเอกสาร <code class="inline">specs/&lt;feature&gt;/spec.md</code> เพื่ออธิบายว่า <b>กำลังจะทำอะไร ทำเพื่อใคร และทำไปทำไม</b> โดยมุ่งเน้นที่พฤติกรรมของผู้ใช้และผลลัพธ์ทางธุรกิจ</p>
+        
+        <div class="cmd-meta-grid">
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">⌨️ ไวยากรณ์ (Syntax)</div>
+            <div class="cmd-meta-val"><code class="inline">/speckit-specify &lt;คำอธิบายความต้องการ&gt;</code><br/><code class="inline">/speckit.specify &lt;โจทย์&gt;</code></div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">📥 ข้อมูลที่ต้องป้อน (Inputs)</div>
+            <div class="cmd-meta-val">User Stories, Functional Requirements, Edge cases, ขอบเขต และ Non-goals</div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">📤 ผลลัพธ์ (Artifact)</div>
+            <div class="cmd-meta-val"><code class="inline">specs/&lt;feature&gt;/spec.md</code></div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">🛡️ จุดตรวจทาน (Review Gate)</div>
+            <div class="cmd-meta-val"><b>⚠️ ห้ามมีชื่อ Tech Stack หลุดเข้ามาเด็ดขาด</b> ต้องมีเกณฑ์การยอมรับ (Acceptance Criteria) ครบถ้วน</div>
+          </div>
+        </div>
 
-      <h3>4. /speckit-plan — วางแผนเทคนิค &amp; เลือก Tech Stack</h3>
-      <p>สร้าง <code class="inline">plan.md</code> — <b>ขั้นตอนนี้คือจุดที่ต้องกำหนดเทคโนโลยี สถาปัตยกรรม และโครงสร้างฐานข้อมูล</b></p>
-      <div class="code"><span class="lang">text</span><pre><code>/speckit-plan ใช้ Node.js + Fastify สำหรับ REST API, ใช้ SQLite สำหรับเก็บข้อมูล, Frontend ใช้ Vanilla JavaScript + HTML5 Drag and Drop API และใช้ Vitest ในการเขียนเทส</code></pre></div>
+        <div class="code"><span class="lang">text</span><pre><code>/speckit-specify สร้างระบบจัดการงานส่วนบุคคล (Task Management):
+- ผู้ใช้สามารถสร้างบอร์ดงาน, เพิ่มการ์ดงาน, แก้ไขรายละเอียด, และลากย้ายสถานะ (Todo, In Progress, Done)
+- แต่ละการ์ดสามารถกำหนดวันครบกำหนด (Due Date) และใส่แท็กสีได้
+- มีระบบค้นหาและกรองการ์ดตามแท็กและสถานะ
+- ขอบเขตความปลอดภัย: ผู้ใช้เห็นเฉพาะงานของตนเอง
+- Non-goals: ยังไม่รองรับการแชร์บอร์ดกับผู้ใช้อื่น และยังไม่มีระบบแจ้งเตือนผ่านอีเมลในเวอร์ชันนี้</code></pre></div>
+        <div class="warn"><b>ข้อห้ามสำคัญ:</b> ห้ามใส่ชื่อ Framework, Database หรือชื่อไฟล์ลงในคำสั่งนี้ ให้เก็บความต้องการด้านเทคนิคไว้สำหรับคำสั่ง <code class="inline">/speckit-plan</code></div>
+      </div>
 
-      <h3>5. /speckit-checklist — ตรวจสอบคุณภาพของ Requirement</h3>
-      <p>สร้าง Checklist ในโฟลเดอร์ <code class="inline">checklists/</code> เพื่อตรวจสอบความสมบูรณ์ของ Requirement ก่อนลงมือเขียนโค้ด</p>
-      <div class="tip"><b>ความหมายของ Checklist:</b> การติ๊ก <code class="inline">[x]</code> ใน Checklist หมายถึง <b>"ผู้ตรวจทานยืนยันว่าสเปกมีคุณภาพครบถ้วนและอนุมัติให้ลงมือสร้างได้"</b> (Requirements Verified Gate) <b>ไม่ใช่</b> หมายถึงว่าเขียนโค้ดเสร็จแล้ว</div>
-      <div class="code"><span class="lang">text</span><pre><code>/speckit-checklist</code></pre></div>
+      <!-- 3. CLARIFY -->
+      <div class="cmd-card-wrap" id="cmd-clarify">
+        <div class="cmd-card-head">
+          <h3>3. /speckit-clarify — ลดความกำกวมในข้อกำหนด</h3>
+          <span class="wf-badge gate">Quality Gate 1</span>
+        </div>
+        <p>ให้ AI วิเคราะห์เอกสาร <code class="inline">spec.md</code> เพื่อหาช่องโหว่ทางตรรกะ, ความคลุมเครือ, หรือกรณีขอบ (Edge Cases) ที่ยังไม่ได้ระบุ แล้วตั้งคำถามเจาะลึกไม่เกิน 3-5 ข้อต่อรอบ</p>
+        
+        <div class="cmd-meta-grid">
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">⌨️ ไวยากรณ์ (Syntax)</div>
+            <div class="cmd-meta-val"><code class="inline">/speckit-clarify</code><br/><code class="inline">/speckit-clarify &lt;ระบุประเด็นที่อยากให้เน้น&gt;</code></div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">📥 ข้อมูลที่ต้องป้อน (Inputs)</div>
+            <div class="cmd-meta-val">อ่านจาก <code class="inline">spec.md</code> อัตโนมัติ (หรือระบุหัวข้อเจาะจง เช่น สิทธิ์การเข้าถึง, ข้อมูลสูญหาย)</div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">📤 ผลลัพธ์ (Artifact)</div>
+            <div class="cmd-meta-val">บันทึกข้อสรุปและคำตอบกลับลงใน <code class="inline">spec.md</code></div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">🛡️ จุดตรวจทาน (Review Gate)</div>
+            <div class="cmd-meta-val">ตรวจดูว่าคำตอบที่บันทึกตรงกับความต้องการของธุรกิจ และสเปกมีความชัดเจนระดับ 100%</div>
+          </div>
+        </div>
 
-      <h3>6. /speckit-tasks — แตกงานย่อยตามลำดับ Dependency</h3>
-      <p>สร้าง <code class="inline">tasks.md</code> โดยแบ่งเป็นเฟส: <b>Setup → Foundational → User Story Tasks → Polish &amp; Edge Cases</b></p>
-      <div class="code"><span class="lang">text</span><pre><code>/speckit-tasks</code></pre></div>
+        <div class="gate-note"><b>บทบาทของ Gate 1:</b> ป้องกันไม่ให้ AI หรือ Developer เริ่มเขียน Technical Design บนข้อกำหนดที่เข้าใจกันไปคนละทิศคนละทาง</div>
+        <div class="code"><span class="lang">text</span><pre><code>/speckit-clarify โฟกัสเรื่องการลบการ์ดงาน: หากลบการ์ดที่ผูกกับข้อมูลอื่นต้องทำ Soft Delete หรือ Hard Delete และต้องมีการกดยืนยัน (Confirmation Dialog) หรือไม่</code></pre></div>
+      </div>
 
-      <h3>7. /speckit-analyze — ตรวจสอบความสอดคล้อง (Read-Only Drift Checker)</h3>
-      <p>ตรวจสอบว่า <code class="inline">spec.md</code>, <code class="inline">plan.md</code> และ <code class="inline">tasks.md</code> สอดคล้องกันหรือไม่ มีฟังก์ชันไหนตกหล่นหรือขัดแย้งกันหรือไม่ (คำสั่งนี้จะไม่อ่าน/แก้โค้ด)</p>
-      <div class="code"><span class="lang">text</span><pre><code>/speckit-analyze</code></pre></div>
+      <!-- 4. PLAN -->
+      <div class="cmd-card-wrap" id="cmd-plan">
+        <div class="cmd-card-head">
+          <h3>4. /speckit-plan — วางแผนเทคนิค &amp; เลือก Tech Stack</h3>
+          <span class="wf-badge req">จำเป็นทุก Workflow</span>
+        </div>
+        <p>สร้างพิมพ์เขียวทางวิศวกรรม <code class="inline">specs/&lt;feature&gt;/plan.md</code> เพื่อแปลง What &amp; Why ให้กลายเป็น <b>How</b> โดยกำหนดภาษา, Framework, โครงสร้างฐานข้อมูล, Data Models และ API Contracts</p>
+        
+        <div class="cmd-meta-grid">
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">⌨️ ไวยากรณ์ (Syntax)</div>
+            <div class="cmd-meta-val"><code class="inline">/speckit-plan &lt;เทคโนโลยี &amp; ข้อกำหนดทางเทคนิค&gt;</code><br/><code class="inline">/speckit.plan &lt;Tech Stack&gt;</code></div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">📥 ข้อมูลที่ต้องป้อน (Inputs)</div>
+            <div class="cmd-meta-val">ภาษา, Frameworks, โครงสร้างตาราง DB, API Endpoints, State Management, Library versions</div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">📤 ผลลัพธ์ (Artifact)</div>
+            <div class="cmd-meta-val"><code class="inline">specs/&lt;feature&gt;/plan.md</code></div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">🛡️ จุดตรวจทาน (Review Gate)</div>
+            <div class="cmd-meta-val">เปิดอ่านไฟล์ plan.md ตรวจดูว่า Schema และ API ออกแบบถูกต้องตามมาตรฐานระบบเดิมหรือไม่</div>
+          </div>
+        </div>
 
-      <h3>8. /speckit-implement — ลงมือเขียนโค้ด</h3>
-      <p>AI จะสร้างโค้ดตามรายการใน <code class="inline">tasks.md</code> ตามลำดับ สำหรับงานใหญ่แนะนำให้กำหนด Scope ทีละเฟส</p>
-      <div class="code"><span class="lang">text</span><pre><code>/speckit-implement ทำเฉพาะเฟส Setup และ Foundational ก่อน</code></pre></div>
+        <div class="code"><span class="lang">text</span><pre><code>/speckit-plan แผนสถาปัตยกรรมและเครื่องมือ:
+- Backend: Node.js (TypeScript) + Fastify พร้อม Zod สำหรับ Request Validation
+- Database: SQLite พร้อม Prisma ORM กำหนดตาราง User, Board, Task, Tag
+- Frontend: React 18 + Tailwind CSS + HTML5 Drag and Drop API
+- Testing: Vitest สำหรับ Unit Test และ Supertest สำหรับ API Integration Test
+- Security: Hash รหัสผ่านด้วย Argon2 และใช้ JWT ใน HttpOnly Cookie</code></pre></div>
+      </div>
 
-      <h3>9. /speckit-converge — ตรวจสอบความครบถ้วนสมบูรณ์ (Append-Only)</h3>
-      <p>AI จะเทียบโค้ดที่สร้างกับ Specification โดยคำสั่งนี้จะไม่แก้โค้ดโดยตรง แต่จะเพิ่ม Tasks ใหม่ถ้าพบว่ายังมีจุดขาดตกบกพร่อง</p>
-      <ul>
-        <li><b>Converged</b> — โค้ดครบถ้วนตามสเปกแล้ว สามารถเปิด PR ได้</li>
-        <li><b>Tasks appended</b> — มีงานที่ตกหล่น ให้รัน <code class="inline">implement → converge</code> ซ้ำจนกว่าจะได้ผลลัพธ์ Converged</li>
-      </ul>
-      <div class="code"><span class="lang">text</span><pre><code>/speckit-converge</code></pre></div>
+      <!-- 5. CHECKLIST -->
+      <div class="cmd-card-wrap" id="cmd-checklist">
+        <div class="cmd-card-head">
+          <h3>5. /speckit-checklist — ตรวจสอบคุณภาพของ Requirement</h3>
+          <span class="wf-badge gate">Quality Gate 2</span>
+        </div>
+        <p>สร้างรายการตรวจสอบในโฟลเดอร์ <code class="inline">specs/&lt;feature&gt;/checklists/</code> เพื่อใช้เป็นจุดตรวจทานความพร้อมและความสมบูรณ์ก่อนที่จะเริ่มแตกงานย่อยและเขียนโค้ด</p>
+        
+        <div class="cmd-meta-grid">
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">⌨️ ไวยากรณ์ (Syntax)</div>
+            <div class="cmd-meta-val"><code class="inline">/speckit-checklist</code><br/><code class="inline">/speckit.checklist</code></div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">📥 ข้อมูลที่ต้องป้อน (Inputs)</div>
+            <div class="cmd-meta-val">อ่านจาก <code class="inline">spec.md</code> และ <code class="inline">plan.md</code> อัตโนมัติ</div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">📤 ผลลัพธ์ (Artifact)</div>
+            <div class="cmd-meta-val"><code class="inline">specs/&lt;feature&gt;/checklists/requirements.md</code></div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">🛡️ จุดตรวจทาน (Review Gate)</div>
+            <div class="cmd-meta-val"><b>มนุษย์ต้องเป็นผู้ตรวจและติ๊ก [x]</b> เพื่อยืนยันว่าสเปกผ่านเกณฑ์พร้อมลงมือสร้าง</div>
+          </div>
+        </div>
 
-      <h3>10. /speckit-taskstoissues — แปลง Tasks เป็น GitHub Issues</h3>
-      <p>แปลงรายการงานใน <code class="inline">tasks.md</code> ให้กลายเป็น <b>GitHub Issues</b> บน Repository โดยอัตโนมัติ เพื่อนำไปมอบหมายและติดตามงานบน GitHub Projects/Boards</p>
-      <div class="note"><b>ข้อกำหนด:</b> โปรเจคต้องตั้งค่า Git remote origin ชี้ไปที่ GitHub และ AI Agent ต้องมี GitHub MCP Tools หรือสิทธิ์ในการสร้าง Issues</div>
-      <div class="code"><span class="lang">text</span><pre><code>/speckit-taskstoissues</code></pre></div>
+        <div class="gate-note"><b>ความเข้าใจที่ถูกต้องเกี่ยวกับ Checklist:</b> การติ๊ก <code class="inline">[x]</code> ในขั้นตอนนี้หมายถึง <b>"Requirements Verified Gate — สเปกครบถ้วนและอนุมัติให้เริ่มทำได้"</b> ไม่ใช่หมายความว่าเขียนโค้ดเสร็จแล้ว</div>
+        <div class="code"><span class="lang">text</span><pre><code>/speckit-checklist</code></pre></div>
+      </div>
+
+      <!-- 6. TASKS -->
+      <div class="cmd-card-wrap" id="cmd-tasks">
+        <div class="cmd-card-head">
+          <h3>6. /speckit-tasks — แตกงานย่อยตามลำดับ Dependency</h3>
+          <span class="wf-badge req">จำเป็นทุก Workflow</span>
+        </div>
+        <p>สร้างแผนที่การทำงาน <code class="inline">specs/&lt;feature&gt;/tasks.md</code> โดยแบ่งงานออกเป็นเฟสที่เรียงตามลำดับการพึ่งพา (Dependency Graph) ชัดเจน เพื่อให้ AI สามารถนำไปพัฒนาทีละส่วนได้โดยไม่มีการข้ามขั้นตอน</p>
+        
+        <div class="cmd-meta-grid">
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">⌨️ ไวยากรณ์ (Syntax)</div>
+            <div class="cmd-meta-val"><code class="inline">/speckit-tasks</code><br/><code class="inline">/speckit.tasks</code></div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">📥 ข้อมูลที่ต้องป้อน (Inputs)</div>
+            <div class="cmd-meta-val">สังเคราะห์ข้อมูลจาก <code class="inline">spec.md</code>, <code class="inline">plan.md</code>, และ <code class="inline">checklists/</code></div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">📤 ผลลัพธ์ (Artifact)</div>
+            <div class="cmd-meta-val"><code class="inline">specs/&lt;feature&gt;/tasks.md</code> (แบ่งเป็น 4 Phase ชัดเจน)</div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">🛡️ จุดตรวจทาน (Review Gate)</div>
+            <div class="cmd-meta-val">ตรวจดูว่ามี Test Tasks ประกบทุก Feature และลำดับงานไม่เกิดวงจรอันตราย (Circular dependency)</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h4>โครงสร้าง 4 Phase มาตรฐานใน tasks.md:</h4>
+          <ol>
+            <li><b>Phase 1: Setup &amp; Scaffolding</b> — ติดตั้งแพ็กเกจ, กำหนดค่าคอนฟิก, ไฟล์สิ่งแวดล้อม</li>
+            <li><b>Phase 2: Foundational &amp; Data Layer</b> — สร้าง Schema, Migration, Data Models, Core Services</li>
+            <li><b>Phase 3: User Stories Implementation</b> — พัฒนาแต่ละฟีเจอร์ย่อย (Story by Story) พร้อม Unit/Integration Tests</li>
+            <li><b>Phase 4: Polish, Edge Cases &amp; Performance</b> — จัดการ Error Handling, Animation, การปรับแต่งความเร็ว</li>
+          </ol>
+        </div>
+        <div class="code"><span class="lang">text</span><pre><code>/speckit-tasks</code></pre></div>
+      </div>
+
+      <!-- 7. ANALYZE -->
+      <div class="cmd-card-wrap" id="cmd-analyze">
+        <div class="cmd-card-head">
+          <h3>7. /speckit-analyze — ตรวจสอบความสอดคล้อง (Read-Only Drift Checker)</h3>
+          <span class="wf-badge gate">Quality Gate 3</span>
+        </div>
+        <p>เป็นเครื่องมือตรวจจับความขัดแย้ง (Drift Checker) ที่ทำงานแบบ <b>Read-only</b> โดยสแกนเปรียบเทียบเอกสารทั้ง 3 ฉบับ (<code class="inline">spec.md</code>, <code class="inline">plan.md</code>, และ <code class="inline">tasks.md</code>) เพื่อตรวจหาความไม่สอดคล้องหรือฟังก์ชันที่ตกหล่น <b>โดยคำสั่งนี้จะไม่อ่านและไม่แก้ซอร์สโค้ด</b></p>
+        
+        <div class="cmd-meta-grid">
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">⌨️ ไวยากรณ์ (Syntax)</div>
+            <div class="cmd-meta-val"><code class="inline">/speckit-analyze</code><br/><code class="inline">/speckit.analyze</code></div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">📥 ข้อมูลที่ต้องป้อน (Inputs)</div>
+            <div class="cmd-meta-val">อ่านจาก <code class="inline">spec.md</code>, <code class="inline">plan.md</code>, <code class="inline">tasks.md</code> แบบอัตโนมัติ</div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">📤 ผลลัพธ์ (Artifact)</div>
+            <div class="cmd-meta-val">รายงาน Drift Analysis บนหน้าแชท (Drift-Free หรือชี้จุดขัดแย้ง)</div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">🛡️ จุดตรวจทาน (Review Gate)</div>
+            <div class="cmd-meta-val">หากพบข้อขัดแย้ง (Discrepancy) ต้องปรับแก้เอกสารต้นทางให้สอดคล้องกันก่อนสั่ง <code class="inline">implement</code></div>
+          </div>
+        </div>
+
+        <div class="gate-note"><b>จุดเด่นของ Gate 3:</b> ประหยัดเวลาการดีบักอย่างมหาศาล เพราะดักจับข้อผิดพลาดและฟังก์ชันที่หลงลืมได้ตั้งแต่ในกระดาษ ก่อนที่จะสูญเสียเวลาไปกับการเขียนโค้ดที่ผิดทิศทาง</div>
+        <div class="code"><span class="lang">text</span><pre><code>/speckit-analyze</code></pre></div>
+      </div>
+
+      <!-- 8. IMPLEMENT -->
+      <div class="cmd-card-wrap" id="cmd-implement">
+        <div class="cmd-card-head">
+          <h3>8. /speckit-implement — ลงมือเขียนโค้ด</h3>
+          <span class="wf-badge req">จำเป็นทุก Workflow</span>
+        </div>
+        <p>AI จะเริ่มต้นสร้างไฟล์, แก้ไขโค้ด, เขียน Unit Tests และรันชุดทดสอบตามลำดับงานที่ระบุไว้ใน <code class="inline">tasks.md</code> โดยจะทำเครื่องหมาย <code class="inline">[x]</code> เมื่อทำแต่ละ Task สำเร็จ</p>
+        
+        <div class="cmd-meta-grid">
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">⌨️ ไวยากรณ์ (Syntax)</div>
+            <div class="cmd-meta-val"><code class="inline">/speckit-implement</code><br/><code class="inline">/speckit-implement &lt;กำหนดขอบเขต Phase&gt;</code></div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">📥 ข้อมูลที่ต้องป้อน (Inputs)</div>
+            <div class="cmd-meta-val">รายการงานใน <code class="inline">tasks.md</code> และพิมพ์เขียวใน <code class="inline">plan.md</code></div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">📤 ผลลัพธ์ (Artifact)</div>
+            <div class="cmd-meta-val">ซอร์สโค้ด, ไฟล์ Test, Migration files และอัปเดตสถานะใน <code class="inline">tasks.md</code></div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">🛡️ จุดตรวจทาน (Review Gate)</div>
+            <div class="cmd-meta-val">รันคำสั่ง Test จริงใน Terminal ของโปรเจค เช่น <code class="inline">npm test</code> เพื่อยืนยันว่าการทดสอบผ่านทุกตัว</div>
+          </div>
+        </div>
+
+        <div class="tip"><b>กลยุทธ์สำคัญสำหรับงานใหญ่:</b> ควรสั่งงานทีละเฟส เช่น เริ่มจาก Setup และ Foundational ก่อน เพื่อให้โค้ดส่วนฐานมั่นคงและตรวจสอบได้ง่าย</div>
+        <div class="code"><span class="lang">text</span><pre><code># สำหรับงานสเกลใหญ่ แนะนำให้ทำทีละช่วง:
+/speckit-implement ทำเฉพาะ Phase 1 (Setup) และ Phase 2 (Foundational) ก่อน
+
+# หรือสั่งทำ User Story เจาะจง:
+/speckit-implement ดำเนินการเฉพาะ User Story 1 (สร้างบอร์ดและการ์ดงาน) พร้อมเขียน Unit Tests</code></pre></div>
+      </div>
+
+      <!-- 9. CONVERGE -->
+      <div class="cmd-card-wrap" id="cmd-converge">
+        <div class="cmd-card-head">
+          <h3>9. /speckit-converge — ตรวจสอบความครบถ้วนสมบูรณ์ (Append-Only)</h3>
+          <span class="wf-badge gate">Quality Gate 4</span>
+        </div>
+        <p>AI จะทำการเปรียบเทียบซอร์สโค้ดและชุดทดสอบที่ถูกสร้างขึ้น กับ Specification ดั้งเดิมใน <code class="inline">spec.md</code> โดยคำสั่งนี้จะ <b>ไม่แก้โค้ดโดยตรง</b> แต่จะประเมินสถานะความครบถ้วนแบบ <b>Append-only</b></p>
+        
+        <div class="cmd-meta-grid">
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">⌨️ ไวยากรณ์ (Syntax)</div>
+            <div class="cmd-meta-val"><code class="inline">/speckit-converge</code><br/><code class="inline">/speckit.converge</code></div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">📥 ข้อมูลที่ต้องป้อน (Inputs)</div>
+            <div class="cmd-meta-val">เปรียบเทียบ Git Working Tree กับ <code class="inline">spec.md</code> และ <code class="inline">tasks.md</code></div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">📤 ผลลัพธ์ (Artifact)</div>
+            <div class="cmd-meta-val">รายงานสถานะ หรือต่อท้าย Tasks ที่ตกหล่นลงใน <code class="inline">tasks.md</code></div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">🛡️ จุดตรวจทาน (Review Gate)</div>
+            <div class="cmd-meta-val">ต้องได้รับผลลัพธ์ <b>Converged</b> จึงจะถือว่าฟีเจอร์เสร็จสมบูรณ์และพร้อมเปิด Pull Request</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h4>2 รูปแบบของผลลัพธ์จากคำสั่ง Converge:</h4>
+          <ul>
+            <li><b>✓ CONVERGED (เสร็จสิ้นสมบูรณ์):</b> โค้ดที่เขียนครบถ้วนตาม Acceptance Criteria ทุกข้อ ไม่พบงานตกค้าง สามารถเปิด Pull Request ได้ทันที</li>
+            <li><b>⚠️ TASKS APPENDED (ยังมีงานตกหล่น):</b> AI พบว่ามีบางฟังก์ชันหรือ Edge Case ในสเปกที่ยังไม่ได้พัฒนา จะทำการเพิ่ม Tasks ใหม่ลงท้ายไฟล์ <code class="inline">tasks.md</code> โดยอัตโนมัติ ให้ผู้พัฒนารันคำสั่ง <code class="inline">implement → converge</code> ซ้ำอีกครั้งจนกว่าจะได้สถานะ Converged</li>
+          </ul>
+        </div>
+        <div class="code"><span class="lang">text</span><pre><code>/speckit-converge</code></pre></div>
+      </div>
+
+      <!-- 10. TASKSTOISSUES -->
+      <div class="cmd-card-wrap" id="cmd-taskstoissues">
+        <div class="cmd-card-head">
+          <h3>10. /speckit-taskstoissues — แปลง Tasks เป็น GitHub Issues</h3>
+          <span class="wf-badge done">ตัวเลือกเสริม (Optional Sync)</span>
+        </div>
+        <p>แปลงรายการงานที่แจกแจงไว้ใน <code class="inline">tasks.md</code> ให้กลายเป็น <b>GitHub Issues</b> บน Remote Repository โดยอัตโนมัติ เพื่อนำไปจัดสรรงานในทีม มอบหมายผู้รับผิดชอบ (Assignee) และติดตามความคืบหน้าบน GitHub Projects Kanban</p>
+        
+        <div class="cmd-meta-grid">
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">⌨️ ไวยากรณ์ (Syntax)</div>
+            <div class="cmd-meta-val"><code class="inline">/speckit-taskstoissues</code><br/><code class="inline">/speckit.taskstoissues</code></div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">📥 ข้อมูลที่ต้องป้อน (Inputs)</div>
+            <div class="cmd-meta-val">อ่านจาก <code class="inline">tasks.md</code> และใช้ข้อมูล Git remote origin</div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">📤 ผลลัพธ์ (Artifact)</div>
+            <div class="cmd-meta-val">GitHub Issues ตัวจริงบน GitHub พร้อมชื่อ, รายละเอียด และ Labels</div>
+          </div>
+          <div class="cmd-meta-item">
+            <div class="cmd-meta-label">🛡️ ข้อกำหนดก่อนใช้งาน</div>
+            <div class="cmd-meta-val">เครื่องต้องมีสิทธิ์ GitHub Token หรือ AI Agent มีเครื่องมือเชื่อมต่อ GitHub API</div>
+          </div>
+        </div>
+
+        <div class="code"><span class="lang">text</span><pre><code>/speckit-taskstoissues</code></pre></div>
+      </div>
     </section>
 
     <!-- 7. TRICKS -->
@@ -1422,6 +2025,30 @@ specify extension update</code></pre></div>
       cheatTable.querySelectorAll('tbody tr').forEach(function (tr) {
         var match = tr.innerText.toLowerCase().indexOf(q) > -1;
         tr.style.display = match ? '' : 'none';
+      });
+    });
+  }
+
+  // Workflow Mode Switcher Tabs
+  var wfTabs = document.querySelectorAll('.wf-tab-btn');
+  var wfPanels = document.querySelectorAll('.wf-panel');
+  if (wfTabs.length > 0) {
+    wfTabs.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var targetId = btn.getAttribute('data-target');
+        wfTabs.forEach(function (b) {
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+        });
+        wfPanels.forEach(function (p) {
+          p.classList.remove('active');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+        var targetPanel = document.getElementById(targetId);
+        if (targetPanel) {
+          targetPanel.classList.add('active');
+        }
       });
     });
   }
