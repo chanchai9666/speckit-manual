@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>คู่มือการใช้งาน Spec Kit ฉบับใช้งานจริง (v2) — สื่อการเรียนรู้ชุมชน</title>
+<meta name="description" content="คู่มือการใช้งาน GitHub Spec Kit และ Spec-Driven Development (SDD) ฉบับภาษาไทย (Unofficial Community Guide) เพื่อการศึกษาและใช้งานจริง พร้อมคำสั่ง CLI, Agent และ Cheat Sheet" />
+<script>
+  // Prevent Theme FOUC (Flash of Unstyled Content)
+  (function() {
+    try {
+      var saved = localStorage.getItem('speckit-theme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var theme = saved || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    } catch (e) {}
+  })();
+</script>
+<style>
+  :root, [data-theme="dark"] {
+    --bg: #0b0e14;
+    --panel: #121720;
+    --panel-2: #18202c;
+    --panel-hover: #1e2837;
+    --border: #222d3d;
+    --border-soft: #192230;
+    --text: #e6edf5;
+    --text-heading: #ffffff;
+    --muted: #8b99ad;
+    --accent: #4d9cf7;
+    --accent-2: #8475ff;
+    --accent-gradient: linear-gradient(135deg, #4d9cf7 0%, #8475ff 100%);
+    --green: #3ecf8e;
+    --amber: #f5a623;
+    --red: #f75555;
+    --cyan: #36c5f0;
+    --code-bg: #070a0f;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --maxw: 1080px;
+    --mono: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    --sans: "Noto Sans Thai", "Sarabun", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --shadow: 0 8px 32px rgba(0,0,0,.3);
+    --card-shadow: none;
+    --tbl-zebra: rgba(255,255,255,.015);
+    --tbl-hover: rgba(77,156,247,.03);
+    --badge-bg: var(--bg);
+  }
+
+  [data-theme="light"] {
+    --bg: #f8fafc;
+    --panel: #ffffff;
+    --panel-2: #f1f5f9;
+    --panel-hover: #e2e8f0;
+    --border: #cbd5e1;
+    --border-soft: #e2e8f0;
+    --text: #1e293b;
+    --text-heading: #0f172a;
+    --muted: #64748b;
+    --accent: #0284c7;
+    --accent-2: #6366f1;
+    --accent-gradient: linear-gradient(135deg, #0284c7 0%, #6366f1 100%);
+    --green: #10b981;
+    --amber: #d97706;
+    --red: #ef4444;
+    --cyan: #0891b2;
+    --code-bg: #0f172a;
+    --shadow: 0 8px 24px rgba(148,163,184,.14);
+    --card-shadow: 0 2px 8px rgba(148,163,184,.08);
+    --tbl-zebra: rgba(241,245,249,.6);
+    --tbl-hover: rgba(2,132,199,.04);
+    --badge-bg: #e2e8f0;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.8;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color .2s ease, color .2s ease;
+  }
+  a { color: var(--accent); text-decoration: none; transition: color .15s; }
+  a:hover { color: #84bafb; text-decoration: underline; }
+
+  /* Layout */
+  .layout { display: grid; grid-template-columns: 280px 1fr; max-width: 1440px; margin: 0 auto; min-height: 100vh; }
+
+  /* Sidebar */
+  aside {
+    position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto;
+    background: var(--bg); border-right: 1px solid var(--border-soft);
+    padding: 24px 16px 80px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+    transition: background-color .2s ease, border-color .2s ease;
+  }
+  aside .brand { font-weight: 800; font-size: 1.15rem; color: var(--text-heading); display: flex; align-items: center; gap: 8px; }
+  aside .brand .logo-badge {
+    background: var(--accent-gradient); color: #fff; font-size: .7rem; font-weight: 800;
+    padding: 2px 7px; border-radius: 5px; text-transform: uppercase;
+  }
+  aside .sub { color: var(--muted); font-size: .78rem; margin: 4px 0 12px; }
+  aside .license-tag {
+    background: rgba(62,207,142,.1); border: 1px solid rgba(62,207,142,.3); color: var(--green);
+    font-size: .7rem; padding: 4px 8px; border-radius: 6px; margin-bottom: 12px; display: inline-block; font-weight: 600;
+  }
+
+  /* Theme Switcher */
+  .theme-switch {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; padding: 8px 12px; margin-bottom: 16px;
+    background: var(--panel-2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); color: var(--text);
+    font-family: var(--sans); font-size: .82rem; font-weight: 600;
+    cursor: pointer; transition: all .15s ease;
+  }
+  .theme-switch:hover { background: var(--panel-hover); border-color: var(--accent); }
+  .theme-switch .theme-icon { font-size: 1.05rem; }
+
+  aside nav a {
+    display: block; color: var(--muted); font-size: .83rem; padding: 6px 10px;
+    border-radius: var(--radius-sm); margin: 2px 0; transition: all .15s ease;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  aside nav a:hover { background: var(--panel); color: var(--text-heading); text-decoration: none; }
+  aside nav a.active { color: var(--text-heading); background: var(--panel-2); font-weight: 600; border-left: 3px solid var(--accent); }
+  aside nav .grp { color: #5f7086; font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; font-weight: 700; margin: 20px 10px 6px; }
+
+  /* Main */
+  main { padding: 40px 52px 140px; max-width: var(--maxw); }
+
+  /* Hero & Disclaimers */
+  header.hero {
+    background: var(--panel);
+    border: 1px solid var(--border); border-left: 4px solid var(--accent);
+    border-radius: var(--radius); padding: 32px; margin-bottom: 40px;
+    box-shadow: var(--shadow);
+    transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease;
+  }
+  header.hero h1 { margin: 0 0 10px; font-size: 2rem; color: var(--text-heading); line-height: 1.3; }
+  header.hero p { margin: 0; color: var(--muted); font-size: 1.05rem; }
+  .badges { margin-top: 18px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .badge {
+    font-size: .74rem; padding: 4px 12px; border-radius: 999px;
+    background: var(--badge-bg); border: 1px solid var(--border); color: var(--text); font-weight: 500;
+  }
+  .badge.mit { border-color: rgba(62,207,142,.4); color: var(--green); }
+  .badge.community { border-color: rgba(132,117,255,.4); color: var(--accent-2); }
+
+  /* License Banner */
+  .license-banner {
+    background: rgba(77,156,247,.08); border: 1px solid rgba(77,156,247,.25);
+    border-radius: var(--radius); padding: 16px 20px; margin-bottom: 40px; font-size: .88rem; color: var(--text);
+  }
+  .license-banner b { color: var(--text-heading); }
+
+  /* Section styling */
+  section { margin-bottom: 64px; scroll-margin-top: 24px; }
+  h2 {
+    position: relative; font-size: 1.5rem; margin: 0 0 20px; padding-left: 16px; line-height: 1.4; color: var(--text-heading);
+  }
+  h2::before {
+    content: ""; position: absolute; left: 0; top: .18em; bottom: .18em; width: 4px;
+    border-radius: 4px; background: var(--accent-gradient);
+  }
+  h3 { font-size: 1.14rem; margin: 32px 0 12px; color: var(--text-heading); }
+  h4 { font-size: .98rem; margin: 20px 0 8px; color: var(--accent); }
+  p { margin: 12px 0; }
+  ul, ol { margin: 12px 0; padding-left: 24px; }
+  li { margin: 6px 0; }
+  b { color: var(--text-heading); }
+
+  /* Code Blocks */
+  .code {
+    position: relative; background: var(--code-bg); border: 1px solid var(--border-soft);
+    border-radius: var(--radius); margin: 16px 0; overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,.15);
+  }
+  .code .lang {
+    position: absolute; top: 9px; left: 14px; font-size: .66rem; color: #818cf8;
+    text-transform: uppercase; letter-spacing: .08em; font-weight: 700;
+  }
+  .code pre {
+    margin: 0; padding: 34px 18px 18px; overflow-x: auto;
+    font-family: var(--mono);
+    font-size: .85rem; line-height: 1.7; color: #e2e8f0;
+  }
+  .code pre code { font-family: inherit; }
+  .copy {
+    position: absolute; top: 8px; right: 10px; font-size: .72rem;
+    background: rgba(255,255,255,.1); color: #cbd5e1; border: 1px solid rgba(255,255,255,.15);
+    border-radius: var(--radius-sm); padding: 3px 10px; cursor: pointer; transition: all .15s;
+    font-family: var(--sans); font-weight: 500;
+  }
+  .copy:hover { color: #fff; border-color: var(--accent); background: rgba(77,156,247,.3); }
+  .copy.done { color: var(--green); border-color: var(--green); background: rgba(62,207,142,.2); }
+  code.inline {
+    background: var(--panel-2); border: 1px solid var(--border-soft); border-radius: 5px;
+    padding: 2px 7px; font-size: .86em; font-family: var(--mono); color: var(--text);
+  }
+
+  /* Tables */
+  .tbl-wrap { overflow-x: auto; margin: 18px 0; border: 1px solid var(--border-soft); border-radius: var(--radius); background: var(--panel); box-shadow: var(--card-shadow); }
+  table { border-collapse: collapse; width: 100%; font-size: .88rem; }
+  th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--border-soft); vertical-align: top; }
+  th { background: var(--panel-2); color: var(--text-heading); font-weight: 600; white-space: nowrap; }
+  tbody tr:nth-child(even) td { background: var(--tbl-zebra); }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover td { background: var(--tbl-hover); }
+
+  /* Callouts */
+  .note, .warn, .tip, .danger, .outcome {
+    border-radius: var(--radius); padding: 14px 18px; margin: 18px 0; font-size: .9rem;
+    border: 1px solid var(--border-soft); border-left: 4px solid; background: var(--panel);
+    box-shadow: var(--card-shadow);
+  }
+  .note { border-left-color: var(--accent); }
+  .tip { border-left-color: var(--green); }
+  .warn { border-left-color: var(--amber); }
+  .danger { border-left-color: var(--red); }
+  .outcome { border-left-color: var(--green); background: rgba(62,207,142,.08); border-color: rgba(62,207,142,.3); }
+  .note b, .warn b, .tip b, .danger b, .outcome b { color: var(--text-heading); }
+
+  /* Flow Diagram */
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 18px 0; padding: 14px; background: var(--panel); border: 1px solid var(--border-soft); border-radius: var(--radius); box-shadow: var(--card-shadow); }
+  .flow .step {
+    background: var(--panel-2); border: 1px solid var(--border); border-radius: 7px;
+    padding: 6px 14px; font-size: .82rem; font-family: var(--mono); color: var(--text-heading); font-weight: 600;
+  }
+  .flow .arrow { color: var(--muted); font-size: 1.1rem; }
+
+  ol.steps { counter-reset: s; list-style: none; padding-left: 0; margin-top: 18px; }
+  ol.steps > li {
+    counter-increment: s; position: relative; padding: 14px 0 14px 50px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  ol.steps > li:last-child { border-bottom: 0; }
+  ol.steps > li::before {
+    content: counter(s); position: absolute; left: 0; top: 14px;
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--panel-2); border: 1px solid var(--border);
+    color: var(--accent); font-weight: 800; font-size: .86rem;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Grid / Cards */
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin: 18px 0; }
+  .card {
+    background: var(--panel); border: 1px solid var(--border-soft); border-radius: var(--radius);
+    padding: 18px 20px; transition: transform .15s, border-color .15s, box-shadow .15s;
+    box-shadow: var(--card-shadow);
+  }
+  .card:hover { border-color: var(--border); transform: translateY(-2px); box-shadow: var(--shadow); }
+  .card h4 { margin-top: 0; color: var(--text-heading); font-size: 1rem; }
+  .card p, .card ul { font-size: .88rem; color: var(--muted); }
+  .card p:last-child, .card ul:last-child { margin-bottom: 0; }
+
+  .search {
+    width: 100%; padding: 13px 18px; border-radius: var(--radius); border: 1px solid var(--border);
+    background: var(--panel); color: var(--text); margin: 18px 0 10px; font-size: .92rem;
+    font-family: var(--sans); box-shadow: var(--card-shadow);
+  }
+  .search:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(77,156,247,.15); }
+
+  /* Tips */
+  .tipcard { border-left: 3px solid var(--accent-2); }
+  .tipcard .tno {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; border-radius: 6px;
+    background: var(--panel-2); border: 1px solid var(--border);
+    color: var(--accent-2); font-size: .78rem; font-weight: 800; margin-right: 8px;
+  }
+  .do-dont { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 16px 0; }
+  .do, .dont { border-radius: var(--radius); padding: 16px 18px; font-size: .88rem; border: 1px solid var(--border-soft); background: var(--panel); box-shadow: var(--card-shadow); }
+  .do { border-left: 4px solid var(--green); }
+  .dont { border-left: 4px solid var(--red); }
+  .do b { color: var(--green); font-size: .95rem; } .dont b { color: var(--red); font-size: .95rem; }
+  .do p, .dont p { margin: 6px 0; }
+  .do p:last-child, .dont p:last-child { margin-bottom: 0; }
+
+  /* Examples accordion */
+  details.ex {
+    background: var(--panel); border: 1px solid var(--border-soft); border-radius: var(--radius);
+    margin: 16px 0; overflow: hidden; box-shadow: var(--card-shadow);
+  }
+  details.ex > summary {
+    cursor: pointer; padding: 16px 20px; font-weight: 600; color: var(--text-heading); list-style: none;
+    display: flex; align-items: center; gap: 12px; font-size: .96rem;
+  }
+  details.ex > summary::-webkit-details-marker { display: none; }
+  details.ex > summary::after { content: "▸"; color: var(--accent); margin-left: auto; font-size: 1.1rem; transition: transform .2s; }
+  details.ex[open] > summary::after { transform: rotate(90deg); }
+  details.ex > summary .tag {
+    font-size: .7rem; font-weight: 700; padding: 3px 10px; border-radius: 999px;
+    background: var(--badge-bg); border: 1px solid var(--border); color: var(--muted);
+  }
+  details.ex > summary .tag.new { color: var(--green); border-color: var(--green); background: rgba(62,207,142,.12); }
+  details.ex > summary .tag.old { color: var(--amber); border-color: var(--amber); background: rgba(245,166,35,.12); }
+  details.ex > summary .tag.bug { color: var(--red); border-color: var(--red); background: rgba(247,85,85,.12); }
+  details.ex > summary .tag.idea { color: var(--accent-2); border-color: var(--accent-2); background: rgba(132,117,255,.12); }
+  details.ex .body { padding: 4px 20px 24px; border-top: 1px solid var(--border-soft); }
+  details.ex h4 { margin-top: 20px; }
+
+  /* Legal Notice Box */
+  .legal-notice {
+    background: var(--panel);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    margin-top: 32px;
+    font-size: .83rem;
+    color: var(--muted);
+    line-height: 1.7;
+    box-shadow: var(--card-shadow);
+  }
+  .legal-notice h4 {
+    margin: 0 0 10px;
+    color: var(--text-heading);
+    font-size: .95rem;
+  }
+  .legal-notice p {
+    margin: 6px 0;
+  }
+  .legal-notice code {
+    font-family: var(--mono);
+    font-size: .85em;
+  }
+
+  footer {
+    color: var(--muted); font-size: .85rem; border-top: 1px solid var(--border-soft);
+    padding-top: 32px; margin-top: 60px; line-height: 1.7;
+  }
+  footer a { color: var(--muted); text-decoration: underline; }
+  footer a:hover { color: var(--text-heading); }
+
+  .menu-btn { display: none; }
+  @media (max-width: 960px) {
+    .layout { grid-template-columns: 1fr; }
+    aside { display: none; position: fixed; z-index: 50; width: 280px; box-shadow: 8px 0 24px rgba(0,0,0,.6); }
+    aside.open { display: block; }
+    main { padding: 28px 20px 100px; }
+    .menu-btn {
+      display: inline-flex; position: fixed; bottom: 24px; right: 24px; z-index: 60;
+      background: var(--accent); color: #fff; border: none; border-radius: 999px;
+      padding: 14px 22px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 24px rgba(0,0,0,.4);
+    }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <aside id="sidebar">
+    <div class="brand">
+      <span>Spec Kit Guide</span>
+      <span class="logo-badge">v2</span>
+    </div>
+    <div class="sub">คู่มือภาษาไทยเพื่อการศึกษาและการใช้งานจริง</div>
+    <div class="license-tag">MIT Open Source License</div>
+
+    <!-- Theme Switcher Button -->
+    <button class="theme-switch" id="theme-toggle" type="button" aria-label="Toggle Dark and Light Mode">
+      <span class="theme-label" id="theme-label">โหมด: มืด 🌙</span>
+      <span class="theme-icon" id="theme-icon">🌙</span>
+    </button>
+
+    <nav id="toc">
+      <div class="grp">1. เริ่มต้น &amp; ปูพื้นฐาน</div>
+      <a href="#intro">1. สรุปภาพรวม &amp; แนวคิด SDD</a>
+      <a href="#prereq-install">2. ข้อกำหนด &amp; การติดตั้ง</a>
+      <a href="#commands-types">3. คำสั่ง 2 ประเภท (CLI vs Agent)</a>
+      <a href="#quickstart">4. เริ่มต้นโปรเจคใหม่แบบด่วน</a>
+      <div class="grp">2. วงจรการทำงานหลัก &amp; การสั่งงาน</div>
+      <a href="#workflow">5. ลำดับขั้นตอนการทำงาน (Workflow)</a>
+      <a href="#agents-cmds">6. เจาะลึกคำสั่ง Agent</a>
+      <a href="#tricks">7. เคล็ดลับการเขียน Prompt</a>
+      <a href="#best-practices">8. แนวทางปฏิบัติที่ดี (Best Practices)</a>
+      <div class="grp">3. สถานการณ์ใช้งานจริง &amp; ตัวอย่าง</div>
+      <a href="#greenfield">9. โปรเจคใหม่ (Greenfield 0-to-1)</a>
+      <a href="#brownfield">10. โปรเจคเดิม (Brownfield)</a>
+      <a href="#spec-maintenance">11. การจัดการ &amp; อัปเดตสเปก</a>
+      <a href="#bugfix">12. การแก้บั๊ก (Bug Extension)</a>
+      <a href="#assess">13. การประเมินไอเดีย (Assess Extension)</a>
+      <a href="#examples">14. รวมตัวอย่างจริง 6 กรณีศึกษา</a>
+      <div class="grp">4. การตั้งค่า &amp; จัดการขั้นสูง</div>
+      <a href="#cli-cmds">15. เจาะลึกคำสั่ง CLI ที่ใช้บ่อย</a>
+      <a href="#integrations">16. Integrations (AI Coding Agents)</a>
+      <a href="#extensions">17. Extensions, Presets &amp; Workflows</a>
+      <a href="#git">18. Git Extension &amp; Branching</a>
+      <a href="#structure">19. โครงสร้างไฟล์ในโปรเจค</a>
+      <a href="#env">20. Environment Variables</a>
+      <a href="#upgrade">21. การอัปเกรดอย่างปลอดภัย</a>
+      <div class="grp">5. อ้างอิง &amp; แก้ปัญหา</div>
+      <a href="#troubleshoot">22. การแก้ปัญหา (Troubleshooting)</a>
+      <a href="#cheatsheet">23. Interactive Cheat Sheet</a>
+    </nav>
+  </aside>
+
+  <main>
+    <header class="hero">
+      <h1>คู่มือการใช้งาน Spec Kit ฉบับใช้งานจริง (v2)</h1>
+      <p>สรุปครบถ้วนเรื่อง <b>Spec-Driven Development (SDD)</b> — วิธีสั่งงาน AI Coding Agent ให้ได้ผลลัพธ์ที่ตรงจุด มีเอกสารตรวจสอบย้อนกลับได้ และลดความผิดพลาด</p>
+      <div class="badges">
+        <span class="badge mit">MIT License</span>
+        <span class="badge community">Unofficial Community Guide</span>
+        <span class="badge">Educational &amp; Practical Use</span>
+        <span class="badge">Python 3.11+ / uv</span>
+        <span class="badge">Copilot · Claude · Opencode · Codex · Qwen · Gemini</span>
+      </div>
+    </header>
+
+    <div class="license-banner">
+      <b>📌 คำชี้แจงลิขสิทธิ์และการใช้งาน (Educational &amp; Community Disclaimer):</b> 
+      คู่มือฉบับภาษาไทยนี้จัดทำขึ้นโดยชุมชนนักพัฒนาเพื่อการศึกษาและการเรียนรู้ โดยเรียบเรียงและสังเคราะห์ขึ้นจากโครงการโอเพนซอร์ส 
+      <a href="https://github.com/github/spec-kit" target="_blank" rel="noopener"><b>github/spec-kit</b></a> 
+      และเอกสารทางการที่ <a href="https://github.github.io/spec-kit/" target="_blank" rel="noopener">github.github.io/spec-kit</a> ภายใต้สัญญาอนุญาต <b>MIT License</b> 
+      (คู่มือนี้เป็นสื่อการเรียนรู้ที่เป็นอิสระและมิได้จัดทำหรือรับรองอย่างเป็นทางการโดย GitHub, Inc.)
+    </div>
+
+    <!-- ==========================================
+         PHASE 1: เริ่มต้น & ปูพื้นฐาน (Getting Started)
+         ========================================== -->
+
+    <!-- 1. INTRO -->
+    <section id="intro">
+      <h2>1. สรุปภาพรวม &amp; แนวคิด Spec-Driven Development (SDD)</h2>
+      <p><b>Spec Kit</b> เป็นชุดเครื่องมือโอเพนซอร์สจาก GitHub ที่ช่วยยกระดับการทำงานกับ AI Coding Agent จากการเขียนโค้ดแบบเดาสุ่ม (vibe coding) มาสู่กระบวนการที่รัดกุมผ่านแนวคิด <b>Spec-Driven Development (SDD)</b> โดยเปลี่ยน Specification ให้กลายเป็นสิ่งที่ “ตรวจสอบได้ (Executable)” และเป็นพิมพ์เขียวที่ AI ใช้สร้างโค้ดตามลำดับ</p>
+
+      <h3>3 กระบวนการอิสระของ Spec Kit</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>เป้าหมาย</th><th>กระบวนการ</th><th>คำสั่งหลัก</th><th>ผลลัพธ์ที่ได้</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><b>สร้างฟีเจอร์ / แอปใหม่</b></td>
+              <td><b>Spec-Driven Development</b> (Core)</td>
+              <td><code class="inline">/speckit.specify</code> → <code class="inline">plan</code> → <code class="inline">tasks</code> → <code class="inline">implement</code> → <code class="inline">converge</code></td>
+              <td><code class="inline">spec.md</code>, <code class="inline">plan.md</code>, <code class="inline">tasks.md</code> และซอร์สโค้ด</td>
+            </tr>
+            <tr>
+              <td><b>วิเคราะห์และซ่อมบั๊ก</b></td>
+              <td><b>Bug Fixing</b> (Bundled Extension)</td>
+              <td><code class="inline">/speckit.bug.assess</code> → <code class="inline">fix</code> → <code class="inline">test</code></td>
+              <td><code class="inline">assessment.md</code>, <code class="inline">fix.md</code>, <code class="inline">test.md</code> (ยืนยันผล verified)</td>
+            </tr>
+            <tr>
+              <td><b>ประเมินความคุ้มค่าของไอเดีย</b></td>
+              <td><b>Idea Assessment</b> (Bundled Extension)</td>
+              <td><code class="inline">/speckit.assess.intake</code> → <code class="inline">research</code> → <code class="inline">define</code> → <code class="inline">shape</code> → <code class="inline">decide</code></td>
+              <td>Verdict: <code class="inline">go</code> / <code class="inline">needs-clarification</code> / <code class="inline">kill</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note"><b>หลักการสำคัญ:</b> SDD อยู่ใน Core และใช้งานได้ทันทีหลัง <code class="inline">specify init</code> ส่วน Bug Fixing และ Idea Assessment เป็น Extension เสริมที่ติดตั้งเพิ่มเมื่อต้องการใช้งาน</div>
+    </section>
+
+    <!-- 2. PREREQUISITES & INSTALLATION -->
+    <section id="prereq-install">
+      <h2>2. ข้อกำหนดเบื้องต้น &amp; การติดตั้ง (Installation)</h2>
+      <h3>ข้อกำหนดของระบบ</h3>
+      <ul>
+        <li><b>Python 3.11 ขึ้นไป</b></li>
+        <li><b>uv</b> (แนะนำอย่างยิ่งสำหรับจัดการเครื่องมือ Python) หรือ <b>pipx</b></li>
+        <li>ระบบปฏิบัติการ: Linux, macOS, Windows (รองรับ PowerShell โดยตรง ไม่จำเป็นต้องใช้ WSL)</li>
+        <li>AI Coding Agent ที่รองรับ (GitHub Copilot, Claude Code, Opencode, Codex CLI, Gemini CLI, Qwen ฯลฯ)</li>
+        <li><b>Git</b> — <i>ไม่บังคับ</i> (ต้องการเฉพาะเมื่อเปิดใช้ git extension)</li>
+      </ul>
+
+      <h3>วิธีการติดตั้ง CLI</h3>
+      <div class="code"><span class="lang">bash</span><pre><code># ติดตั้งด้วย uv (แนะนำ รวดเร็วและแยกสภาพแวดล้อมอัตโนมัติ)
+uv tool install specify-cli
+
+# หรือติดตั้งด้วย pipx
+pipx install specify-cli
+
+# ติดตั้งเวอร์ชันเจาะจง
+uv tool install specify-cli==0.12.11
+
+# ติดตั้งจาก GitHub Repository โดยตรง (ระบุ release tag)
+uv tool install specify-cli --from git+https://github.com/github/spec-kit.git@vX.Y.Z
+
+# ใช้งานครั้งเดียวโดยไม่ต้องติดตั้งลงเครื่อง (uvx)
+uvx --from git+https://github.com/github/spec-kit.git@vX.Y.Z specify init --here --integration copilot</code></pre></div>
+
+      <h3>ตรวจสอบความพร้อมหลังติดตั้ง</h3>
+      <div class="code"><span class="lang">bash</span><pre><code>specify version      # ตรวจสอบเวอร์ชัน CLI, Python, แพลตฟอร์ม
+specify check        # ตรวจสอบว่าเครื่องมือของ AI Agent มีพร้อมในระบบ
+specify self check   # ตรวจสอบว่ามี CLI เวอร์ชันใหม่ออกมาหรือไม่ (read-only)</code></pre></div>
+    </section>
+
+    <!-- 3. COMMAND TYPES -->
+    <section id="commands-types">
+      <h2>3. คำสั่ง 2 ประเภท (CLI vs Agent)</h2>
+      <p>สิ่งที่ผู้เริ่มต้นมักสับสนคือการแยกระหว่าง <b>คำสั่งใน Terminal</b> กับ <b>คำสั่งในหน้าแชทของ AI</b> ซึ่งต้องแยกให้ชัดเจนตั้งแต่เริ่มแรก:</p>
+
+      <div class="grid">
+        <div class="card">
+          <h4>1. CLI Commands (Terminal)</h4>
+          <p>รันใน <b>Command Prompt / Terminal</b> ใช้สำหรับเตรียมโปรเจค, สลับ Agent, ติดตั้ง Extensions และอัปเกรดเครื่องมือ</p>
+          <div class="code"><span class="lang">bash</span><pre><code>specify init my-project
+specify integration switch claude
+specify extension add bug
+specify self upgrade</code></pre></div>
+        </div>
+        <div class="card">
+          <h4>2. Agentic Commands (Chat / Skill)</h4>
+          <p>พิมพ์ใน <b>ช่องแชทของ AI Coding Agent</b> เป็น Slash Command หรือ Skill เพื่อควบคุมกระบวนการสร้างโค้ด</p>
+          <div class="code"><span class="lang">text</span><pre><code>/speckit-specify
+/speckit-plan
+/speckit-implement
+/speckit-converge</code></pre></div>
+        </div>
+      </div>
+
+      <h3>รูปแบบการเรียกคำสั่งตาม AI Agent</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>AI Agent</th><th>รูปแบบ Notation</th><th>ตัวอย่างคำสั่ง</th><th>ตำแหน่งไฟล์ที่ติดตั้ง</th></tr></thead>
+          <tbody>
+            <tr><td>GitHub Copilot (Default)</td><td>Dash notation</td><td><code class="inline">/speckit-specify</code></td><td><code class="inline">.github/skills/</code></td></tr>
+            <tr><td>Claude Code</td><td>Slash / Dotted</td><td><code class="inline">/speckit.specify</code></td><td><code class="inline">.claude/skills/</code></td></tr>
+            <tr><td>Opencode</td><td>Slash / Dotted</td><td><code class="inline">/speckit.specify</code></td><td><code class="inline">.opencode/commands/</code></td></tr>
+            <tr><td>Codex CLI / ZCode</td><td>Dollar notation</td><td><code class="inline">$speckit-specify</code></td><td><code class="inline">.codex/skills/</code></td></tr>
+            <tr><td>Kimi Code</td><td>Skill colon</td><td><code class="inline">/skill:speckit-specify</code></td><td><code class="inline">.kimi/skills/</code></td></tr>
+            <tr><td>Qwen Code</td><td>Slash / Dotted</td><td><code class="inline">/speckit.specify</code></td><td><code class="inline">.qwen/commands/</code></td></tr>
+            <tr><td>Antigravity / Gemini CLI</td><td>Slash / Dotted</td><td><code class="inline">/speckit.specify</code></td><td><code class="inline">.agents/skills/</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 4. QUICKSTART -->
+    <section id="quickstart">
+      <h2>4. เริ่มต้นโปรเจคใหม่แบบด่วน (Quick Start)</h2>
+      <ol class="steps">
+        <li><b>ติดตั้ง CLI ครั้งเดียวต่อเครื่อง</b>
+          <div class="code"><span class="lang">bash</span><pre><code>uv tool install specify-cli</code></pre></div>
+        </li>
+        <li><b>สร้างโฟลเดอร์โปรเจคและกำหนด AI Agent</b>
+          <div class="code"><span class="lang">bash</span><pre><code>specify init my-project --integration copilot
+cd my-project</code></pre></div>
+          <div class="tip">สำหรับการรันบน CI หรือ Script ให้ใส่ <code class="inline">--non-interactive</code> และ <code class="inline">--script sh</code> (หรือ <code class="inline">ps</code> บน Windows)</div>
+        </li>
+        <li><b>เปิดโฟลเดอร์โปรเจคใน AI Agent แล้วรันคำสั่งตามลำดับ</b>
+          <div class="code"><span class="lang">text</span><pre><code>/speckit-constitution  กำหนดหลักการพื้นฐานและมาตรฐานคุณภาพ (ทำครั้งเดียว)
+/speckit-specify       อธิบายว่าต้องการสร้างอะไรและเพราะอะไร (What &amp; Why)
+/speckit-clarify       ตอบคำถามเพื่อลดความกำกวมในข้อกำหนด
+/speckit-plan          กำหนด Architecture, Framework และ Database (Tech Stack)
+/speckit-checklist     ตรวจสอบความพร้อมของ Requirement
+/speckit-tasks         แตกงานย่อยและจัดลำดับ Dependency
+/speckit-analyze       ตรวจความสอดคล้องระหว่าง Spec, Plan และ Tasks (Read-only)
+/speckit-implement     ลงมือเขียนโค้ดตาม Tasks
+/speckit-converge      ตรวจสอบความครบถ้วนเทียบกับ Spec</code></pre></div>
+        </li>
+        <li><b>ทำซ้ำ <code class="inline">implement → converge</code> จนกว่าจะได้ผลลัพธ์เป็น Converged</b> จากนั้นจึงเริ่มทดสอบและเปิด Pull Request</li>
+      </ol>
+      <div class="note"><b>ข้อควรจำ:</b> <code class="inline">specify init</code> ทำเพียงครั้งเดียว คำสั่งและเทมเพลตจะถูกติดตั้งถาวรในโฟลเดอร์ <code class="inline">.specify/</code> และโฟลเดอร์ของ AI Agent</div>
+    </section>
+
+    <!-- ==========================================
+         PHASE 2: วงจรการทำงานหลัก & การสั่งงาน (Core SDD & Prompting)
+         ========================================== -->
+
+    <!-- 5. WORKFLOW -->
+    <section id="workflow">
+      <h2>5. ลำดับขั้นตอนการทำงาน (Workflow Order)</h2>
+      <p>ลำดับการทำงานมาตรฐานที่แนะนำสำหรับการพัฒนาซอฟต์แวร์:</p>
+
+      <div class="flow">
+        <span class="step">constitution</span><span class="arrow">→</span>
+        <span class="step">specify</span><span class="arrow">→</span>
+        <span class="step">clarify</span><span class="arrow">→</span>
+        <span class="step">plan</span><span class="arrow">→</span>
+        <span class="step">checklist</span><span class="arrow">→</span>
+        <span class="step">tasks</span><span class="arrow">→</span>
+        <span class="step">analyze</span><span class="arrow">→</span>
+        <span class="step">implement</span><span class="arrow">→</span>
+        <span class="step">converge</span>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h4>🚀 เส้นทางสั้น (สำหรับฟีเจอร์เล็ก)</h4>
+          <p><code class="inline">specify → plan → tasks → implement → converge</code></p>
+          <p>เหมาะสำหรับการเพิ่มปุ่ม, แก้ไขข้อความ, หรือการเปลี่ยนแปลงขนาดเล็กที่ไม่ซับซ้อน</p>
+        </div>
+        <div class="card">
+          <h4>🛡️ เส้นทางเต็ม (สำหรับงาน Production)</h4>
+          <p><code class="inline">constitution → specify → clarify → plan → checklist → tasks → analyze → implement → converge</code></p>
+          <p>มีจุดตรวจสอบคุณภาพ (Quality Gates) ครบถ้วน เพื่อป้องกันข้อผิดพลาดทางสถาปัตยกรรม</p>
+        </div>
+      </div>
+      <div class="warn"><b>กฎทอง:</b> รันทีละคำสั่งและ <b>ตรวจสอบผลลัพธ์ของไฟล์ที่สร้างขึ้นก่อนเสมอ</b> อย่ารันคำสั่งทั้งหมดรวดเดียวโดยไม่ตรวจทาน</div>
+    </section>
+
+    <!-- 6. AGENT COMMANDS -->
+    <section id="agents-cmds">
+      <h2>6. เจาะลึกคำสั่ง Agent (Step-by-Step)</h2>
+
+      <h3>1. /speckit-constitution — กำหนดกฎเหล็กและมาตรฐานโปรเจค</h3>
+      <p>สร้างไฟล์ <code class="inline">.specify/memory/constitution.md</code> เพื่อเป็นบรรทัดฐานให้ AI อ้างอิงในทุกเฟสถัดไป ทำครั้งเดียวตอนเริ่มต้นโปรเจค</p>
+      <div class="code"><span class="lang">text</span><pre><code>/speckit-constitution โปรเจคนี้เน้น Clean Code, ต้องมี Unit Test ครอบคลุม Business Logic ทุกจุด, ทุก API ต้องมี Input Validation และห้ามเพิ่ม External Library โดยไม่จำเป็น</code></pre></div>
+
+      <h3>2. /speckit-specify — ระบุความต้องการ (What &amp; Why)</h3>
+      <p>สร้างเอกสาร <code class="inline">specs/&lt;feature&gt;/spec.md</code> อธิบายว่า <b>กำลังจะทำอะไรและทำไปทำไม</b> โดย <b>⚠️ ห้ามระบุ Tech Stack ในขั้นตอนนี้</b></p>
+      <div class="code"><span class="lang">text</span><pre><code>/speckit-specify สร้างระบบจัดการงานส่วนบุคคล ผู้ใช้สามารถสร้าง บอร์ด Kanban เพิ่มการ์ดงาน ลากย้ายสถานะ และกำหนดวันส่งมอบได้ โดยมีระบบกรองงานตามแท็ก</code></pre></div>
+
+      <h3>3. /speckit-clarify — ลดความกำกวมในข้อกำหนด</h3>
+      <p>AI จะถามคำถามเจาะลึกไม่เกิน 5 ข้อต่อรอบ เพื่อความชัดเจนของ Requirement แล้วบันทึกคำตอบกลับลงใน <code class="inline">spec.md</code> สามารถเรียกซ้ำได้หลายรอบ</p>
+      <div class="code"><span class="lang">text</span><pre><code>/speckit-clarify โฟกัสเรื่องสิทธิ์การเข้าถึงบอร์ด: บอร์ดเป็นแบบสาธารณะหรือส่วนตัว และการลบการ์ดต้องมีการยืนยันหรือไม่</code></pre></div>
+
+      <h3>4. /speckit-plan — วางแผนเทคนิค &amp; เลือก Tech Stack</h3>
+      <p>สร้าง <code class="inline">plan.md</code> — <b>ขั้นตอนนี้คือจุดที่ต้องกำหนดเทคโนโลยี สถาปัตยกรรม และโครงสร้างฐานข้อมูล</b></p>
+      <div class="code"><span class="lang">text</span><pre><code>/speckit-plan ใช้ Node.js + Fastify สำหรับ REST API, ใช้ SQLite สำหรับเก็บข้อมูล, Frontend ใช้ Vanilla JavaScript + HTML5 Drag and Drop API และใช้ Vitest ในการเขียนเทส</code></pre></div>
+
+      <h3>5. /speckit-checklist — ตรวจสอบคุณภาพของ Requirement</h3>
+      <p>สร้าง Checklist ในโฟลเดอร์ <code class="inline">checklists/</code> เพื่อตรวจสอบความสมบูรณ์ของ Requirement ก่อนลงมือเขียนโค้ด</p>
+      <div class="tip"><b>ความหมายของ Checklist:</b> การติ๊ก <code class="inline">[x]</code> ใน Checklist หมายถึง <b>"ผู้ตรวจทานยืนยันว่าสเปกมีคุณภาพครบถ้วนและอนุมัติให้ลงมือสร้างได้"</b> (Requirements Verified Gate) <b>ไม่ใช่</b> หมายถึงว่าเขียนโค้ดเสร็จแล้ว</div>
+      <div class="code"><span class="lang">text</span><pre><code>/speckit-checklist</code></pre></div>
+
+      <h3>6. /speckit-tasks — แตกงานย่อยตามลำดับ Dependency</h3>
+      <p>สร้าง <code class="inline">tasks.md</code> โดยแบ่งเป็นเฟส: <b>Setup → Foundational → User Story Tasks → Polish &amp; Edge Cases</b></p>
+      <div class="code"><span class="lang">text</span><pre><code>/speckit-tasks</code></pre></div>
+
+      <h3>7. /speckit-analyze — ตรวจสอบความสอดคล้อง (Read-Only Drift Checker)</h3>
+      <p>ตรวจสอบว่า <code class="inline">spec.md</code>, <code class="inline">plan.md</code> และ <code class="inline">tasks.md</code> สอดคล้องกันหรือไม่ มีฟังก์ชันไหนตกหล่นหรือขัดแย้งกันหรือไม่ (คำสั่งนี้จะไม่อ่าน/แก้โค้ด)</p>
+      <div class="code"><span class="lang">text</span><pre><code>/speckit-analyze</code></pre></div>
+
+      <h3>8. /speckit-implement — ลงมือเขียนโค้ด</h3>
+      <p>AI จะสร้างโค้ดตามรายการใน <code class="inline">tasks.md</code> ตามลำดับ สำหรับงานใหญ่แนะนำให้กำหนด Scope ทีละเฟส</p>
+      <div class="code"><span class="lang">text</span><pre><code>/speckit-implement ทำเฉพาะเฟส Setup และ Foundational ก่อน</code></pre></div>
+
+      <h3>9. /speckit-converge — ตรวจสอบความครบถ้วนสมบูรณ์ (Append-Only)</h3>
+      <p>AI จะเทียบโค้ดที่สร้างกับ Specification โดยคำสั่งนี้จะไม่แก้โค้ดโดยตรง แต่จะเพิ่ม Tasks ใหม่ถ้าพบว่ายังมีจุดขาดตกบกพร่อง</p>
+      <ul>
+        <li><b>Converged</b> — โค้ดครบถ้วนตามสเปกแล้ว สามารถเปิด PR ได้</li>
+        <li><b>Tasks appended</b> — มีงานที่ตกหล่น ให้รัน <code class="inline">implement → converge</code> ซ้ำจนกว่าจะได้ผลลัพธ์ Converged</li>
+      </ul>
+      <div class="code"><span class="lang">text</span><pre><code>/speckit-converge</code></pre></div>
+
+      <h3>10. /speckit-taskstoissues — แปลง Tasks เป็น GitHub Issues</h3>
+      <p>แปลงรายการงานใน <code class="inline">tasks.md</code> ให้กลายเป็น <b>GitHub Issues</b> บน Repository โดยอัตโนมัติ เพื่อนำไปมอบหมายและติดตามงานบน GitHub Projects/Boards</p>
+      <div class="note"><b>ข้อกำหนด:</b> โปรเจคต้องตั้งค่า Git remote origin ชี้ไปที่ GitHub และ AI Agent ต้องมี GitHub MCP Tools หรือสิทธิ์ในการสร้าง Issues</div>
+      <div class="code"><span class="lang">text</span><pre><code>/speckit-taskstoissues</code></pre></div>
+    </section>
+
+    <!-- 7. TRICKS -->
+    <section id="tricks">
+      <h2>7. เคล็ดลับการเขียน Prompt &amp; ทริกการสั่งงาน</h2>
+
+      <h3>เปรียบเทียบการเขียน Prompt ในขั้น Specify</h3>
+      <div class="do-dont">
+        <div class="do">
+          <b>✓ สิ่งที่ควรทำ (ชัดเจน ตรงเป้าหมาย)</b>
+          <p>บอก <b>ผลลัพธ์ที่ต้องการ</b> และ <b>เหตุผลทางธุรกิจ (Why)</b></p>
+          <p>ยก <b>ตัวอย่างการใช้งานจริง</b> 1-2 กรณี</p>
+          <p>ระบุ <b>ขอบเขตและสิ่งห้ามแตะ</b> (เช่น API เดิม)</p>
+          <p>ระบุ <b>Non-goals</b> (สิ่งที่ไม่ต้องทำในรอบนี้)</p>
+        </div>
+        <div class="dont">
+          <b>✗ สิ่งที่ควรหลีกเลี่ยง</b>
+          <p>ใส่ชื่อ Library หรือ Tech Stack ใน <code class="inline">specify</code></p>
+          <p>สั่งงานกว้างๆ คลุมเครือ เช่น "ทำให้ดีๆ ปลอดภัย"</p>
+          <p>รวมหลายฟีเจอร์ที่ไม่เกี่ยวข้องกันใน Spec เดียว</p>
+          <p>ปล่อยให้ AI คาดเดา Business Logic และ Edge Cases เอง</p>
+        </div>
+      </div>
+
+      <div class="code"><span class="lang">text</span><pre><code># ❌ ตัวอย่าง Prompt ที่ไม่ดี (AI ต้องเดาเยอะ)
+/speckit-specify ทำระบบล็อกอินให้ปลอดภัยและทันสมัย
+
+# ✅ ตัวอย่าง Prompt ที่ดี (ครบทั้ง What, Why, ขอบเขต และ Non-goals)
+/speckit-specify ผู้ใช้สามารถเข้าสู่ระบบด้วยอีเมลและรหัสผ่าน มีฟังก์ชัน "ลืมรหัสผ่าน" ที่ส่งลิงก์รีเซ็ตอายุ 15 นาที
+หากกรอกรหัสผ่านผิดติดต่อกัน 5 ครั้ง ให้ล็อกบัญชีชั่วคราว 15 นาทีเพื่อป้องกัน Brute Force
+ขอบเขต: ยังไม่ต้องทำระบบ 2FA และ Social Login ในรอบนี้</code></pre></div>
+    </section>
+
+    <!-- 8. BEST PRACTICES -->
+    <section id="best-practices">
+      <h2>8. แนวทางปฏิบัติที่ดี (Best Practices)</h2>
+      <ol>
+        <li><b>ตั้ง Constitution ครั้งเดียวแต่ให้ครอบคลุม</b> — ใส่มาตรฐานด้านการทดสอบ คุณภาพโค้ด และข้อจำกัดทางสถาปัตยกรรม</li>
+        <li><b>แยก What/Why ออกจาก How อย่างเด็ดขาด</b> — ห้ามใส่ชื่อ Framework หรือ Database ในขั้น <code class="inline">specify</code> ให้เก็บไว้ใส่ใน <code class="inline">plan</code></li>
+        <li><b>รันทีละขั้นตอนและตรวจทานไฟล์จริง</b> — อ่าน <code class="inline">spec.md</code> และ <code class="inline">plan.md</code> ก่อนสั่งแตกงานเสมอ</li>
+        <li><b>ใช้ Quality Gates กับงาน Production</b> — เพิ่มขั้นตอน <code class="inline">clarify</code>, <code class="inline">checklist</code> และ <code class="inline">analyze</code></li>
+        <li><b>ทำซ้ำ <code class="inline">implement → converge</code> จนกว่าจะได้ Converged</b> — ก่อนเปิด PR หรือส่งมอบงาน</li>
+        <li><b>Commit งานก่อนการ Init หรือ Upgrade ทุกครั้ง</b> — เพื่อให้สามารถดู Diff ได้ชัดเจน</li>
+      </ol>
+    </section>
+
+    <!-- ==========================================
+         PHASE 3: สถานการณ์ใช้งานจริง & ตัวอย่าง (Practical Scenarios & Case Studies)
+         ========================================== -->
+
+    <!-- 9. GREENFIELD -->
+    <section id="greenfield">
+      <h2>9. โปรเจคใหม่ (Greenfield 0-to-1)</h2>
+      <p>การขึ้นโปรเจคใหม่จากศูนย์ทำได้ง่ายและเป็นระเบียบตามขั้นตอนดังนี้:</p>
+
+      <div class="code"><span class="lang">bash</span><pre><code># 1. ติดตั้ง CLI (หากยังไม่ได้ติดตั้ง)
+uv tool install specify-cli
+
+# 2. สร้างโปรเจคใหม่
+specify init task-manager --integration copilot
+cd task-manager</code></pre></div>
+
+      <p>จากนั้นในช่องแชทของ AI Coding Agent:</p>
+      <div class="code"><span class="lang">text</span><pre><code># 1. ตั้งกฎโปรเจค
+/speckit-constitution เน้นความปลอดภัย ทุก Input ต้องถูก Sanitize, รองรับ Dark Mode และมี Test ครบ
+
+# 2. ระบุ Requirement
+/speckit-specify สร้างแอป Task Manager ส่วนบุคคล มีระบบจัดหมวดหมู่ตามโปรเจค บันทึกโน้ตย่อย และแจ้งเตือนเมื่อใกล้ครบกำหนด
+
+# 3. เคลียร์ความกำกวม
+/speckit-clarify โฟกัสเรื่องระบบแจ้งเตือนและรูปแบบการเก็บข้อมูลออฟไลน์
+
+# 4. วางแผนสถาปัตยกรรม
+/speckit-plan ใช้ TypeScript + React + Tailwind CSS สำหรับ UI และ IndexedDB สำหรับเก็บข้อมูลในเครื่อง
+
+# 5. ตรวจสอบ & แตกงาน
+/speckit-checklist
+/speckit-tasks
+/speckit-analyze
+
+# 6. เขียนโค้ด & ตรวจสอบความครบถ้วน
+/speckit-implement ทำเฉพาะ Setup และ Foundational phases
+/speckit-converge</code></pre></div>
+    </section>
+
+    <!-- 10. BROWNFIELD -->
+    <section id="brownfield">
+      <h2>10. โปรเจคเดิมที่มีอยู่แล้ว (Brownfield)</h2>
+      <p>เมื่อนำ Spec Kit มาใช้กับโปรเจคเดิมที่มีโค้ดอยู่แล้ว <b>ไม่จำเป็นต้องเขียน Spec ย้อนหลังให้กับโค้ดเก่าทั้งหมด</b> ให้เริ่มจากการเปลี่ยนแปลงเฉพาะส่วน (Bounded Change):</p>
+
+      <ol class="steps">
+        <li><b>บันทึกหรือ Commit งานเดิมก่อนเสมอ</b>
+          <div class="code"><span class="lang">bash</span><pre><code>git checkout -b adopt-speckit
+git commit -am "baseline before speckit"</code></pre></div>
+        </li>
+        <li><b>Initialize Spec Kit ในโฟลเดอร์ปัจจุบัน</b>
+          <div class="code"><span class="lang">bash</span><pre><code>specify init --here --force --integration copilot
+git diff    # ตรวจสอบว่ามีไฟล์ใดเปลี่ยนแปลงบ้าง</code></pre></div>
+        </li>
+        <li><b>ตั้ง Constitution อิงจากมาตรฐานที่มีอยู่จริงของโปรเจค</b>
+          <div class="code"><span class="lang">text</span><pre><code>/speckit-constitution ห้ามแก้ไข Public API เดิม, คงโครงสร้างโฟลเดอร์เดิม, รันเทสที่มีอยู่เดิมต้องผ่าน 100%</code></pre></div>
+        </li>
+        <li><b>ระบุ Bounded Change สำหรับฟีเจอร์ใหม่</b>
+          <div class="code"><span class="lang">text</span><pre><code>/speckit-specify เพิ่มระบบ Export รายงานสรุปเป็นไฟล์ Excel ในหน้ารายการสั่งซื้อ โดยใช้สิทธิ์ Authorization เดิม</code></pre></div>
+        </li>
+        <li><b>วางแผนให้เข้ากับระบบเดิมแล้วทำตามกระบวนการ SDD</b></li>
+      </ol>
+    </section>
+
+    <!-- 11. SPEC MAINTENANCE -->
+    <section id="spec-maintenance">
+      <h2>11. การจัดการ &amp; อัปเดตสเปก (Spec Maintenance Models)</h2>
+      <p>เมื่อซอฟต์แวร์มีการเปลี่ยนแปลง คุณสามารถเลือกรูปแบบการดูแล Spec ได้ 3 แบบตามความเหมาะสม:</p>
+
+      <div class="grid">
+        <div class="card">
+          <h4>1. Flow-Forward Spec (แนะนำ)</h4>
+          <p>แต่ละโฟลเดอร์ใน <code class="inline">specs/</code> คือบันทึกประวัติศาสตร์ของฟีเจอร์นั้น เมื่อมีฟีเจอร์ใหม่ให้สร้าง Spec ใหม่เสมอ</p>
+          <p><b>กระบวนการ:</b> <code class="inline">/speckit-specify</code> ใหม่ → plan → tasks → implement → converge</p>
+        </div>
+        <div class="card">
+          <h4>2. Living Spec</h4>
+          <p>ไฟล์ <code class="inline">spec.md</code> ถือเป็นสัญญาหลัก (Source of Truth) เมื่อ Requirement เปลี่ยน ให้แก้ที่ <code class="inline">spec.md</code> ก่อนเสมอ</p>
+          <p><b>กระบวนการ:</b> แก้ spec.md → plan ใหม่ → tasks ใหม่ → analyze → implement</p>
+        </div>
+        <div class="card">
+          <h4>3. Flow-Back Spec</h4>
+          <p>เมื่อพบข้อจำกัดใหม่ระหว่าง Implement ให้บันทึก Discovery แล้วย้อนกลับมาปรับปรุง Spec/Plan ให้สอดคล้องกัน</p>
+          <p><b>กระบวนการ:</b> บันทึกประเด็นที่พบ → ปรับปรุง spec/plan → analyze → implement ต่อ</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12. BUG FIXING -->
+    <section id="bugfix">
+      <h2>12. กระบวนการแก้บั๊ก (Bug Fixing Extension)</h2>
+      <p>สำหรับการแก้บั๊ก ไม่จำเป็นต้องรัน SDD เต็มรูปแบบ ให้ใช้ <b>Bug Fixing Extension</b> ซึ่งทำงานเป็น 3 ขั้นตอนที่รัดกุม:</p>
+
+      <div class="code"><span class="lang">bash</span><pre><code># 1. ติดตั้ง Extension แก้บั๊ก
+specify extension add bug</code></pre></div>
+
+      <p>จากนั้นในช่องแชทของ AI Agent:</p>
+      <div class="code"><span class="lang">text</span><pre><code># 1. วินิจฉัยหาสาเหตุ (Read-only ไม่แก้โค้ด)
+/speckit-bug-assess "TypeError: Cannot read properties of undefined (reading 'token') เกิดขึ้นตอน Login ด้วย SSO" slug=sso-login-crash
+
+# 2. ลงมือแก้ไขโค้ดตามผลการวินิจฉัย
+/speckit-bug-fix slug=sso-login-crash
+
+# 3. รันเทสและทดสอบยืนยันผล
+/speckit-bug-test slug=sso-login-crash</code></pre></div>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>คำสั่ง</th><th>หน้าที่</th><th>การทำงานกับโค้ด</th><th>ผลลัพธ์</th></tr></thead>
+          <tbody>
+            <tr><td><code class="inline">/speckit-bug-assess</code></td><td>วินิจฉัยและจำลองปัญหา</td><td>Read-only (ห้ามแก้โค้ด)</td><td><code class="inline">.specify/bugs/&lt;slug&gt;/assessment.md</code></td></tr>
+            <tr><td><code class="inline">/speckit-bug-fix</code></td><td>แก้ไขโค้ดตามแผน</td><td><b>แก้ไขโค้ด</b></td><td><code class="inline">fix.md</code> และซอร์สโค้ดที่แก้แล้ว</td></tr>
+            <tr><td><code class="inline">/speckit-bug-test</code></td><td>ทดสอบยืนยันว่าบั๊กหายจริง</td><td>Read-only (รันเทส)</td><td><code class="inline">test.md</code> (Verdict: <code class="inline">verified</code>)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="warn"><b>มาตรฐานการปิดบั๊ก:</b> การแก้บั๊กจะถือว่าสมบูรณ์เมื่อได้ Verdict เป็น <b>`verified`</b> เท่านั้น หากได้ <code class="inline">partial</code> หรือ <code class="inline">failed</code> ต้องวนรอบแก้และทดสอบใหม่</div>
+    </section>
+
+    <!-- 13. IDEA ASSESSMENT -->
+    <section id="assess">
+      <h2>13. การประเมินไอเดีย (Idea Assessment Extension)</h2>
+      <p>ใช้สำหรับประเมินความคุ้มค่าและความเป็นไปได้ก่อนตัดสินใจลงทุนลงแรงพัฒนา โดยทำงานได้แม้ยังไม่มีซอร์สโค้ดสักบรรทัด:</p>
+
+      <div class="code"><span class="lang">bash</span><pre><code># ติดตั้ง Extension ประเมินไอเดีย
+specify extension add assess</code></pre></div>
+
+      <div class="flow">
+        <span class="step">assess-intake</span><span class="arrow">→</span>
+        <span class="step">assess-research</span><span class="arrow">→</span>
+        <span class="step">assess-define</span><span class="arrow">→</span>
+        <span class="step">assess-shape</span><span class="arrow">→</span>
+        <span class="step">assess-decide</span>
+      </div>
+
+      <div class="code"><span class="lang">text</span><pre><code>/speckit-assess-intake "เพิ่มระบบการทำงานแบบ Offline-first สำหรับผู้ใช้งานภาคสนาม" slug=offline-sync
+/speckit-assess-research slug=offline-sync
+/speckit-assess-define slug=offline-sync
+/speckit-assess-shape slug=offline-sync
+/speckit-assess-decide slug=offline-sync</code></pre></div>
+
+      <p>ผลลัพธ์การตัดสินใจ (Verdict ใน <code class="inline">decision.md</code>):</p>
+      <ul>
+        <li><b>`go`</b> — ไอเดียคุ้มค่าและชัดเจน ให้ส่งต่อไปสร้างจริงด้วย <code class="inline">/speckit-specify</code></li>
+        <li><b>`needs-clarification`</b> — ข้อมูลยังไม่เพียงพอ ต้องค้นคว้าหรือสอบถามผู้ใช้เพิ่มเติม</li>
+        <li><b>`kill`</b> — ยกเลิกไอเดียอย่างมีเหตุผลและมีเอกสารอ้างอิงชัดเจน (ช่วยประหยัดเวลาพัฒนา)</li>
+      </ul>
+    </section>
+
+    <!-- 14. EXAMPLES -->
+    <section id="examples">
+      <h2>14. รวมตัวอย่างการใช้งานจริง 6 กรณีศึกษา (Case Studies)</h2>
+
+      <details class="ex" open>
+        <summary><span class="tag new">GREENFIELD</span> 1. สร้างแอป Bookmark Manager ใหม่จากศูนย์</summary>
+        <div class="body">
+          <p>เริ่มต้นสร้างเว็บแอปพลิเคชันสำหรับบันทึกบุ๊กมาร์กส่วนตัว</p>
+          <div class="code"><span class="lang">bash</span><pre><code>specify init bookmark-app --integration copilot
+cd bookmark-app</code></pre></div>
+          <div class="code"><span class="lang">text</span><pre><code>/speckit-constitution เน้นความเรียบง่าย ไม่มี Dependency เกินจำเป็น และเขียน Unit Test ทุกจุด
+/speckit-specify สร้างเว็บจดบุ๊กมาร์ก ผู้ใช้บันทึก URL พร้อมชื่อและแท็ก ค้นหาตามคำสำคัญและกรองตามแท็กได้ ยังไม่ต้องทำระบบแชร์ลิงก์
+/speckit-clarify โฟกัสเรื่องการกรองหลายแท็กว่าเป็นเงื่อนไขแบบ AND หรือ OR
+/speckit-plan ใช้ Node.js + SQLite เก็บข้อมูลในเครื่อง Frontend ใช้ HTML5 + Vanilla JS
+/speckit-checklist
+/speckit-tasks
+/speckit-analyze
+/speckit-implement ทำเฉพาะ Setup และ Foundational phases
+/speckit-converge</code></pre></div>
+          <div class="outcome"><b>ผลลัพธ์:</b> ได้โครงสร้าง <code class="inline">specs/001-bookmark-app/</code> พร้อมโค้ดที่ผ่านการทดสอบและสอดคล้องกับสเปก 100%</div>
+        </div>
+      </details>
+
+      <details class="ex">
+        <summary><span class="tag old">BROWNFIELD</span> 2. เพิ่ม Dark Mode ให้กับระบบเดิมที่มีอยู่แล้ว</summary>
+        <div class="body">
+          <p>เพิ่มธีมมืดให้กับเว็บ React เดิมโดยไม่กระทบ Layout และ Component API เดิม</p>
+          <div class="code"><span class="lang">bash</span><pre><code>git commit -am "baseline before speckit"
+specify init --here --force --integration claude</code></pre></div>
+          <div class="code"><span class="lang">text</span><pre><code>/speckit-constitution คง Public Component API เดิม ใช้ Design Tokens เดิม และห้ามลง CSS Framework เพิ่ม
+/speckit-specify เพิ่มปุ่มสลับ Dark Mode บน Header บันทึกค่าลงใน LocalStorage และตรวจจับ prefers-color-scheme ของระบบ
+/speckit-plan ใช้ CSS Variables + data-theme attribute บน &lt;html&gt;
+/speckit-implement
+/speckit-converge</code></pre></div>
+          <div class="outcome"><b>ผลลัพธ์:</b> เพิ่ม Dark Mode ได้สำเร็จโดย Diff มีขนาดเล็ก ตรวจทานง่าย และไม่กระทบโค้ดเดิม</div>
+        </div>
+      </details>
+
+      <details class="ex">
+        <summary><span class="tag bug">BUG FIX</span> 3. วินิจฉัยและแก้ปัญหา Login Crash</summary>
+        <div class="body">
+          <p>แก้ไขปัญหาผู้ใช้บางรายไม่สามารถเข้าสู่ระบบผ่าน SSO ได้</p>
+          <div class="code"><span class="lang">bash</span><pre><code>specify extension add bug</code></pre></div>
+          <div class="code"><span class="lang">text</span><pre><code>/speckit-bug-assess "TypeError: Cannot read properties of undefined (reading 'token') เมื่อ Login ด้วย SSO" slug=sso-crash
+/speckit-bug-fix slug=sso-crash
+/speckit-bug-test slug=sso-crash</code></pre></div>
+          <div class="outcome"><b>ผลลัพธ์:</b> ได้ <code class="inline">assessment.md</code>, <code class="inline">fix.md</code> และผลการทดสอบยืนยัน <code class="inline">test.md</code> ในสถานะ <b>verified</b></div>
+        </div>
+      </details>
+
+      <details class="ex">
+        <summary><span class="tag idea">IDEA</span> 4. ประเมินไอเดีย Offline Mode ก่อนตัดสินใจสร้าง</summary>
+        <div class="body">
+          <p>ประเมินความคุ้มค่าและความซับซ้อนของระบบ Sync ข้อมูลออฟไลน์</p>
+          <div class="code"><span class="lang">bash</span><pre><code>specify extension add assess</code></pre></div>
+          <div class="code"><span class="lang">text</span><pre><code>/speckit-assess-intake "ระบบทำงานออฟไลน์และซิงค์ข้อมูลอัตโนมัติเมื่อต่ออินเทอร์เน็ต" slug=offline-sync
+/speckit-assess-research slug=offline-sync
+/speckit-assess-define slug=offline-sync
+/speckit-assess-shape slug=offline-sync
+/speckit-assess-decide slug=offline-sync</code></pre></div>
+          <div class="outcome"><b>ผลลัพธ์:</b> ได้รายงานการตัดสินใจที่มีข้อมูลประกอบและข้อเปรียบเทียบชัดเจนใน <code class="inline">.specify/assessments/offline-sync/decision.md</code></div>
+        </div>
+      </details>
+
+      <details class="ex">
+        <summary><span class="tag new">AUTOMATION</span> 5. รัน Workflow อัตโนมัติตั้งแต่ Spec จนถึง Implement</summary>
+        <div class="body">
+          <div class="code"><span class="lang">bash</span><pre><code># รัน Full SDD Workflow โดยส่ง Requirement เข้าไปในคำสั่งเดียว
+specify workflow run speckit -i spec="สร้างระบบจองห้องประชุมพร้อมปฏิทิน"
+
+# ตรวจสอบสถานะและ Resume เมื่องานหยุดพัก
+specify workflow status
+specify workflow resume &lt;run_id&gt;</code></pre></div>
+        </div>
+      </details>
+
+      <details class="ex">
+        <summary><span class="tag old">MAINTENANCE</span> 6. การอัปเกรด Spec Kit และดูแลรักษาโปรเจค</summary>
+        <div class="body">
+          <div class="code"><span class="lang">bash</span><pre><code>specify self check
+specify self upgrade --dry-run
+specify self upgrade
+specify integration upgrade copilot
+specify extension update</code></pre></div>
+        </div>
+      </details>
+    </section>
+
+    <!-- ==========================================
+         PHASE 4: การตั้งค่า & จัดการขั้นสูง (Configuration & Advanced)
+         ========================================== -->
+
+    <!-- 15. CLI COMMANDS -->
+    <section id="cli-cmds">
+      <h2>15. เจาะลึกคำสั่ง CLI ที่ใช้บ่อย</h2>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>กลุ่ม</th><th>คำสั่ง</th><th>คำอธิบายการใช้งาน</th></tr></thead>
+          <tbody>
+            <tr><td><b>Core</b></td><td><code class="inline">specify init &lt;name&gt;</code></td><td>เริ่มต้นสร้างโปรเจค Spec Kit</td></tr>
+            <tr><td><b>Core</b></td><td><code class="inline">specify check</code></td><td>ตรวจสอบความพร้อมของระบบและ Agent</td></tr>
+            <tr><td><b>Core</b></td><td><code class="inline">specify version</code></td><td>แสดงเวอร์ชันของ CLI และ Platform</td></tr>
+            <tr><td><b>Self</b></td><td><code class="inline">specify self check</code></td><td>ตรวจสอบเวอร์ชันใหม่ของ specify-cli (read-only)</td></tr>
+            <tr><td><b>Self</b></td><td><code class="inline">specify self upgrade [--dry-run] [--tag &lt;v&gt;]</code></td><td>อัปเกรดตัว CLI เองอัตโนมัติ</td></tr>
+            <tr><td><b>Integration</b></td><td><code class="inline">specify integration list [--available]</code></td><td>ดูรายการ AI Agent ที่รองรับและสถานะ</td></tr>
+            <tr><td><b>Integration</b></td><td><code class="inline">specify integration switch &lt;key&gt;</code></td><td>สลับ AI Agent เริ่มต้นของโปรเจค</td></tr>
+            <tr><td><b>Integration</b></td><td><code class="inline">specify integration upgrade &lt;key&gt;</code></td><td>อัปเดตไฟล์เทมเพลตและคำสั่งของ Agent</td></tr>
+            <tr><td><b>Integration</b></td><td><code class="inline">specify integration status [--json]</code></td><td>รายงานสถานะไฟล์ managed ของ Integration</td></tr>
+            <tr><td><b>Extension</b></td><td><code class="inline">specify extension add &lt;name&gt;</code></td><td>ติดตั้ง Extension เช่น <code class="inline">bug</code>, <code class="inline">assess</code>, <code class="inline">git</code></td></tr>
+            <tr><td><b>Extension</b></td><td><code class="inline">specify extension list / update / remove</code></td><td>จัดการ Extension ในโปรเจค</td></tr>
+            <tr><td><b>Preset</b></td><td><code class="inline">specify preset add &lt;id&gt; [--priority N]</code></td><td>ปรับแต่งโครงสร้าง Template ของ Spec/Plan</td></tr>
+            <tr><td><b>Preset</b></td><td><code class="inline">specify preset resolve &lt;template&gt;</code></td><td>ตรวจสอบว่าเทมเพลตใดกำลังถูกใช้งานจริง</td></tr>
+            <tr><td><b>Workflow</b></td><td><code class="inline">specify workflow run &lt;name&gt; -i key=val</code></td><td>รันกระบวนการหลายขั้นตอนอัตโนมัติ</td></tr>
+            <tr><td><b>Bundle</b></td><td><code class="inline">specify bundle install &lt;role&gt;</code></td><td>ติดตั้งชุดเครื่องมือครบชุด เช่น <code class="inline">bugfix</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>พารามิเตอร์สำคัญของ <code class="inline">specify init</code></h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Flag</th><th>ความหมาย</th><th>ตัวอย่างการใช้งาน</th></tr></thead>
+          <tbody>
+            <tr><td><code class="inline">--integration &lt;key&gt;</code></td><td>เลือก AI Agent (copilot, claude, opencode, codex, qwen ฯลฯ)</td><td><code class="inline">specify init app --integration claude</code></td></tr>
+            <tr><td><code class="inline">--here</code></td><td>สร้างในโฟลเดอร์ปัจจุบันแทนการสร้างโฟลเดอร์ใหม่</td><td><code class="inline">specify init --here --integration copilot</code></td></tr>
+            <tr><td><code class="inline">--force</code></td><td>ยอมรับโฟลเดอร์ที่มีไฟล์อยู่แล้ว (ใช้กับ Brownfield)</td><td><code class="inline">specify init --here --force --integration copilot</code></td></tr>
+            <tr><td><code class="inline">--script sh|ps|py</code></td><td>กำหนดชนิดสคริปต์ (macOS/Linux: sh, Windows: ps)</td><td><code class="inline">specify init app --script sh</code></td></tr>
+            <tr><td><code class="inline">--non-interactive</code></td><td>ปิดการถามตอบ เหมาะสำหรับระบบ CI/CD</td><td><code class="inline">specify init app --non-interactive</code></td></tr>
+            <tr><td><code class="inline">--preset &lt;id&gt;</code></td><td>ติดตั้ง Preset พร้อมกับการ init โปรเจค</td><td><code class="inline">specify init app --preset enterprise</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 16. INTEGRATIONS -->
+    <section id="integrations">
+      <h2>16. การเชื่อมต่อ AI Agent (Integrations)</h2>
+      <p>Spec Kit ออกแบบมาเพื่อทำงานร่วมกับ AI Coding Agent หลากหลายค่าย โดยสามารถสลับไปมาระหว่าง Agent ได้อย่างราบรื่น:</p>
+
+      <div class="code"><span class="lang">bash</span><pre><code>specify integration list              # ดูรายการ Agent ทั้งหมดและตัวที่ใช้งานอยู่
+specify integration switch claude     # สลับไปใช้ Claude Code
+specify integration switch copilot    # สลับไปใช้ GitHub Copilot
+specify integration upgrade copilot   # อัปเดตไฟล์เทมเพลตและคำสั่งของ Agent
+specify integration status            # ตรวจสอบสถานะไฟล์ managed</code></pre></div>
+
+      <div class="tip">เมื่อสลับ Integration ไฟล์ที่มีการแก้ไขด้วยตนเองจะถูก <b>เก็บรักษาไว้</b> โดยจะเขียนทับเฉพาะไฟล์ managed ที่ไม่มีการเปลี่ยนแปลงเท่านั้น</div>
+    </section>
+
+    <!-- 17. EXTENSIONS -->
+    <section id="extensions">
+      <h2>17. Extensions, Presets, Workflows &amp; Bundles</h2>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>เครื่องมือ</th><th>การใช้งาน</th><th>คำสั่งตัวอย่าง</th></tr></thead>
+          <tbody>
+            <tr><td><b>Extension</b></td><td>เพิ่มความสามารถและกระบวนการใหม่</td><td><code class="inline">specify extension add bug</code></td></tr>
+            <tr><td><b>Preset</b></td><td>ปรับแต่งรูปแบบเทมเพลตและมาตรฐานเอกสาร</td><td><code class="inline">specify preset add enterprise-spec</code></td></tr>
+            <tr><td><b>Workflow</b></td><td>รันกระบวนการหลายขั้นตอนอัตโนมัติ</td><td><code class="inline">specify workflow run speckit -i spec="..."</code></td></tr>
+            <tr><td><b>Bundle</b></td><td>ติดตั้งชุดเครื่องมือครบเซ็ตตาม Role</td><td><code class="inline">specify bundle install bugfix</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 18. GIT -->
+    <section id="git">
+      <h2>18. Git Extension &amp; Automation</h2>
+      <p>Spec Kit ไม่บังคับให้ต้องใช้ Git ในการทำงาน แต่หากต้องการให้จัดการ Branch และ Commit ให้อัตโนมัติ สามารถเปิดใช้งาน Git Extension ได้:</p>
+
+      <div class="code"><span class="lang">bash</span><pre><code>specify extension add git</code></pre></div>
+      <p>ไฟล์การตั้งค่าจะอยู่ที่ <code class="inline">.specify/extensions/git/git-config.yml</code></p>
+      
+      <div class="code"><span class="lang">yaml</span><pre><code># ตัวอย่างการตั้งค่า .specify/extensions/git/git-config.yml
+branch_numbering: sequential       # ลำดับแบบ sequential (001-...) หรือ timestamp
+branch_template: ""                # รูปแบบชื่อ branch (เช่น {author}/{number}-{slug})
+init_commit_message: "[Spec Kit] Initial commit"
+commit_style: fixed                # fixed หรือ conventional commits
+auto_commit:
+  default: false                   # commit อัตโนมัติหรือไม่
+  after_specify:
+    enabled: true
+    message: "[Spec Kit] Add specification"</code></pre></div>
+    </section>
+
+    <!-- 19. STRUCTURE -->
+    <section id="structure">
+      <h2>19. โครงสร้างไฟล์ในโปรเจค (.specify/ Directory Map)</h2>
+      <div class="code"><span class="lang">text</span><pre><code>my-project/
+├── .specify/                     # โฟลเดอร์จัดการหลักของ Spec Kit (Commit เข้า Git)
+│   ├── memory/
+│   │   └── constitution.md       # กฎเกณฑ์และมาตรฐานของโปรเจค
+│   ├── templates/                # เทมเพลตสำหรับสร้างเอกสาร
+│   │   └── overrides/            # เทมเพลตที่ปรับแต่งเฉพาะโปรเจค
+│   ├── scripts/                  # สคริปต์เสริม (sh, ps, py)
+│   ├── extensions/               # ส่วนขยายที่ติดตั้งและการตั้งค่า
+│   ├── bugs/                     # เอกสารจากการแก้บั๊ก (.specify/bugs/&lt;slug&gt;/)
+│   ├── assessments/              # เอกสารจากการประเมินไอเดีย
+│   ├── feature.json              # ตัวชี้ฟีเจอร์ปัจจุบัน (machine-local / gitignored)
+│   └── .gitignore                # จัดการการละเว้นไฟล์ machine-local
+├── specs/                        # โฟลเดอร์จัดเก็บ Artifacts ของแต่ละฟีเจอร์ (ไม่ถูกแตะตอนอัปเกรด)
+│   └── 001-user-auth/
+│       ├── spec.md               # ความต้องการ (What &amp; Why)
+│       ├── plan.md               # แผนสถาปัตยกรรม (How &amp; Tech Stack)
+│       ├── tasks.md              # รายการงานย่อยที่เรียงลำดับแล้ว
+│       └── checklists/           # รายการตรวจสอบคุณภาพ
+├── .github/skills/               # คำสั่งสำหรับ GitHub Copilot
+├── .claude/skills/               # คำสั่งสำหรับ Claude Code
+├── .agents/skills/               # คำสั่งสำหรับ Antigravity / Gemini
+└── src/ ... ซอร์สโค้ดของแอปพลิเคชัน</code></pre></div>
+    </section>
+
+    <!-- 20. ENV -->
+    <section id="env">
+      <h2>20. Environment Variables ที่สำคัญ</h2>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>ตัวแปรสภาพแวดล้อม</th><th>หน้าที่และการใช้งาน</th></tr></thead>
+          <tbody>
+            <tr><td><code class="inline">SPECIFY_FEATURE_DIRECTORY</code></td><td>ระบุโฟลเดอร์ฟีเจอร์ปัจจุบันโดยตรง (ข้าม <code class="inline">feature.json</code>) เช่น <code class="inline">specs/001-my-feature</code></td></tr>
+            <tr><td><code class="inline">SPECIFY_INIT_DIR</code></td><td>ชี้ตำแหน่ง Root ของโปรเจคเมื่อรันคำสั่งจากโฟลเดอร์อื่น</td></tr>
+            <tr><td><code class="inline">SPECIFY_FEATURE_NO_PERSIST=1</code></td><td>ห้ามเขียนไฟล์ <code class="inline">feature.json</code> เมื่อรันหลาย Agent พร้อมกัน</td></tr>
+            <tr><td><code class="inline">SPECKIT_INTEGRATION_DEFAULT</code></td><td>กำหนด Agent เริ่มต้นสำหรับการทำ <code class="inline">specify init</code> บน CI</td></tr>
+            <tr><td><code class="inline">SPECIFY_UPGRADE_TIMEOUT_SECS</code></td><td>กำหนดเวลา timeout สำหรับ subprocess ขณะอัปเกรด</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 21. UPGRADE -->
+    <section id="upgrade">
+      <h2>21. การอัปเกรดอย่างปลอดภัย (Upgrades)</h2>
+      <div class="code"><span class="lang">bash</span><pre><code># 1. ตรวจสอบเวอร์ชันใหม่
+specify self check
+
+# 2. ดูพรีวิวการอัปเกรด (Dry-run)
+specify self upgrade --dry-run
+
+# 3. อัปเกรดตัว CLI จริง
+specify self upgrade
+
+# 4. อัปเดตไฟล์และเทมเพลตในโปรเจค
+specify integration upgrade copilot
+specify extension update</code></pre></div>
+      <div class="tip"><b>ความปลอดภัย:</b> โฟลเดอร์ <code class="inline">specs/</code>, ซอร์สโค้ด และไฟล์ <code class="inline">constitution.md</code> จะ <b>ไม่ถูกแตะต้องหรือเขียนทับ</b> ในระหว่างการอัปเกรด</div>
+    </section>
+
+    <!-- ==========================================
+         PHASE 5: อ้างอิง & แก้ปัญหา (Reference & Quick Lookup)
+         ========================================== -->
+
+    <!-- 22. TROUBLESHOOTING -->
+    <section id="troubleshoot">
+      <h2>22. การแก้ปัญหาที่พบบ่อย (Troubleshooting)</h2>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>ปัญหาที่พบ</th><th>สาเหตุ</th><th>แนวทางแก้ไข</th></tr></thead>
+          <tbody>
+            <tr><td>คำสั่ง Slash commands ไม่แสดงในแชท</td><td>Agent ยังไม่ได้โหลดไฟล์ skill ใหม่</td><td>Restart IDE หรือโปรแกรม Agent ทั้งหมด แล้วตรวจดูว่าไฟล์อยู่ในโฟลเดอร์ skill เช่น <code class="inline">.claude/skills/</code> หรือ <code class="inline">.github/skills/</code></td></tr>
+            <tr><td>ข้อความเตือน directory is not empty</td><td>ใช้ <code class="inline">specify init</code> ในโฟลเดอร์ที่มีไฟล์อยู่แล้ว</td><td>ใส่ flag <code class="inline">--force</code> และ <code class="inline">--here</code> หลังทำ backup หรืองานเดิม</td></tr>
+            <tr><td>คำสั่ง Slash commands ซ้ำซ้อน</td><td>มีไฟล์คำสั่งเก่าตกค้าง</td><td>ลบโฟลเดอร์ skill เก่าออกแล้วรัน <code class="inline">specify integration switch &lt;agent&gt;</code> ใหม่</td></tr>
+            <tr><td>ไม่ได้ใช้ Git จะทำงานได้ไหม</td><td>เข้าใจผิดว่าต้องมี Git Branch</td><td>Spec Kit อ้างอิงจาก <code class="inline">feature.json</code> สามารถทำงานได้ปกติแม้ไม่มี Git</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 23. CHEATSHEET -->
+    <section id="cheatsheet">
+      <h2>23. Interactive Cheat Sheet (ค้นหาแนวทางตามสถานการณ์)</h2>
+      <input class="search" id="cheat-search" type="search" placeholder="พิมพ์ค้นหาสถานการณ์ เช่น bug, greenfield, brownfield, upgrade, agent, issue..." />
+      <div class="tbl-wrap">
+        <table id="cheat-table">
+          <thead><tr><th>สถานการณ์ที่พบ</th><th>กระบวนการ / คำสั่งที่ต้องใช้</th><th>เป้าหมาย</th></tr></thead>
+          <tbody>
+            <tr><td><b>เริ่มต้นสร้างโปรเจคใหม่</b></td><td><code class="inline">specify init</code> → <code class="inline">/speckit-constitution</code> → <code class="inline">/speckit-specify</code></td><td>สร้างโครงสร้างและเริ่มวงจร SDD</td></tr>
+            <tr><td><b>นำมาใช้กับโปรเจคเดิมที่มีโค้ด</b></td><td><code class="inline">specify init --here --force</code> → ตั้ง Constitution คุมของเดิม</td><td>จำกัดขอบเขตการแก้ไขเฉพาะ Bounded Change</td></tr>
+            <tr><td><b>ความต้องการยังไม่ชัดเจน</b></td><td><code class="inline">/speckit-clarify</code></td><td>ตอบคำถามเพื่อลดความกำกวมในข้อกำหนด</td></tr>
+            <tr><td><b>กำหนด Architecture / Tech Stack</b></td><td><code class="inline">/speckit-plan</code></td><td>เลือกภาษา, เฟรมเวิร์ก, และฐานข้อมูล</td></tr>
+            <tr><td><b>ตรวจสอบความสอดคล้องของเอกสาร</b></td><td><code class="inline">/speckit-analyze</code></td><td>ค้นหา Gap/Conflict ข้ามเอกสาร (Read-only)</td></tr>
+            <tr><td><b>ลงมือเขียนโค้ดตามงาน</b></td><td><code class="inline">/speckit-implement</code></td><td>สร้างโค้ดตามลำดับใน tasks.md</td></tr>
+            <tr><td><b>ตรวจสอบว่าโค้ดสร้างครบตามสเปกหรือยัง</b></td><td><code class="inline">/speckit-converge</code></td><td>ตรวจ Gap และเพิ่ม Task จนได้ผล Converged</td></tr>
+            <tr><td><b>แปลง Tasks เป็น GitHub Issues</b></td><td><code class="inline">/speckit-taskstoissues</code></td><td>สร้าง GitHub Issues อัตโนมัติจาก tasks.md</td></tr>
+            <tr><td><b>มีบั๊กเกิดขึ้นในระบบ</b></td><td><code class="inline">specify extension add bug</code> → <code class="inline">/speckit-bug-*</code></td><td>วินิจฉัย แก้ไข และทดสอบยืนยันผล (verified)</td></tr>
+            <tr><td><b>ต้องการประเมินไอเดียก่อนลงทุน</b></td><td><code class="inline">specify extension add assess</code> → <code class="inline">/speckit-assess-*</code></td><td>ได้ข้อสรุป verdict: go / clarify / kill</td></tr>
+            <tr><td><b>ต้องการสลับ AI Agent</b></td><td><code class="inline">specify integration switch &lt;key&gt;</code></td><td>เปลี่ยนรูปแบบคำสั่งให้ตรงกับ Agent ใหม่</td></tr>
+            <tr><td><b>ต้องการอัปเกรดเครื่องมือ</b></td><td><code class="inline">specify self check</code> → <code class="inline">specify self upgrade</code></td><td>อัปเดต CLI เป็นเวอร์ชันล่าสุด</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note"><b>สรุปย่อใน 1 บรรทัด:</b> <code class="inline">specify</code> = นิยามความต้องการ · <code class="inline">plan</code> = เลือกวิธีและเทคโนโลยี · <code class="inline">tasks</code> = แบ่งงานย่อย · <code class="inline">implement</code> = เขียนโค้ด · <code class="inline">converge</code> = ตรวจสอบความครบถ้วน</div>
+    </section>
+
+    <!-- Legal & License Notices Section -->
+    <div class="legal-notice">
+      <h4>⚖️ สัญญาอนุญาตและข้อชี้แจงทางกฎหมาย (Legal &amp; Trademark Notices)</h4>
+      <p><b>สัญญาอนุญาตโครงการต้นฉบับ:</b> โครงการ <a href="https://github.com/github/spec-kit" target="_blank" rel="noopener">github/spec-kit</a> และเอกสารอ้างอิง เผยแพร่ภายใต้ <b>MIT License</b> โดย GitHub, Inc. ลิขสิทธิ์ &copy; GitHub, Inc. สงวนสิทธิ์ตามเงื่อนไขของสัญญาอนุญาตเปิดเผยต้นฉบับ</p>
+      <p><b>เครื่องหมายการค้า:</b> GitHub®, GitHub Copilot® และโลโก้ Octocat เป็นเครื่องหมายการค้าจดทะเบียนของ GitHub, Inc. และ/หรือ Microsoft Corporation เครื่องหมายการค้า ชื่อทางการค้า และโลโก้อื่นๆ ทั้งหมดที่กล่าวถึงในเอกสารนี้ (เช่น Claude Code, Opencode, Gemini, Codex, Qwen) เป็นกรรมสิทธิ์ของเจ้าของเครื่องหมายนั้นๆ</p>
+      <p><b>ข้อจำกัดความรับผิดชอบ (Disclaimer):</b> คู่มือฉบับภาษาไทยนี้จัดทำขึ้นโดยชุมชนนักพัฒนาเพื่อวัตถุประสงค์ในการศึกษาและการถ่ายทอดความรู้ (Unofficial Community Guide) มิได้มีความเกี่ยวข้อง ได้รับการสนับสนุน หรือได้รับการรับรองอย่างเป็นทางการจาก GitHub, Inc. หรือ Microsoft Corporation แต่อย่างใด</p>
+    </div>
+
+    <footer>
+      <p><b>คู่มือการใช้งาน Spec Kit ฉบับใช้งานจริง (v2)</b> — สื่อการเรียนรู้ชุมชนเพื่อการศึกษาและพัฒนาทักษะวิศวกรรมซอฟต์แวร์</p>
+      <p>อ้างอิงโครงการโอเพนซอร์ส 
+        <a href="https://github.com/github/spec-kit" target="_blank" rel="noopener">github/spec-kit</a> (MIT License) 
+        และเอกสารทางการที่ <a href="https://github.github.io/spec-kit/" target="_blank" rel="noopener">github.github.io/spec-kit</a>
+      </p>
+    </footer>
+  </main>
+</div>
+
+<button class="menu-btn" id="menu-btn" aria-label="Toggle Navigation Menu">สารบัญ</button>
+
+<script>
+  // Theme Switcher Logic
+  var themeToggleBtn = document.getElementById('theme-toggle');
+  var themeLabel = document.getElementById('theme-label');
+  var themeIcon = document.getElementById('theme-icon');
+
+  function updateThemeUI(theme) {
+    if (theme === 'light') {
+      if (themeLabel) themeLabel.textContent = 'โหมด: สว่าง ☀️';
+      if (themeIcon) themeIcon.textContent = '☀️';
+    } else {
+      if (themeLabel) themeLabel.textContent = 'โหมด: มืด 🌙';
+      if (themeIcon) themeIcon.textContent = '🌙';
+    }
+  }
+
+  // Initialize UI based on current theme attribute
+  var currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+  updateThemeUI(currentTheme);
+
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', function() {
+      var current = document.documentElement.getAttribute('data-theme') || 'dark';
+      var next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try {
+        localStorage.setItem('speckit-theme', next);
+      } catch (e) {}
+      updateThemeUI(next);
+    });
+  }
+
+  // Copy buttons for code blocks
+  document.querySelectorAll('.code').forEach(function (block) {
+    var pre = block.querySelector('pre');
+    if (!pre) return;
+    var btn = document.createElement('button');
+    btn.className = 'copy';
+    btn.type = 'button';
+    btn.textContent = 'คัดลอก';
+    btn.addEventListener('click', function () {
+      var text = pre.innerText;
+      navigator.clipboard.writeText(text).then(function () {
+        btn.textContent = 'คัดลอกแล้ว ✓';
+        btn.classList.add('done');
+        setTimeout(function () {
+          btn.textContent = 'คัดลอก';
+          btn.classList.remove('done');
+        }, 1800);
+      }).catch(function() {
+        btn.textContent = 'ไม่สำเร็จ';
+      });
+    });
+    block.appendChild(btn);
+  });
+
+  // Active TOC highlight on scroll
+  var links = Array.prototype.slice.call(document.querySelectorAll('#toc a'));
+  var sections = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+  function onScroll() {
+    var pos = window.scrollY + 140;
+    var current = 0;
+    for (var i = 0; i < sections.length; i++) {
+      if (sections[i] && sections[i].offsetTop <= pos) current = i;
+    }
+    links.forEach(function (a, i) { a.classList.toggle('active', i === current); });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // Mobile menu toggle
+  var mb = document.getElementById('menu-btn');
+  var sb = document.getElementById('sidebar');
+  if (mb && sb) {
+    mb.addEventListener('click', function () { sb.classList.toggle('open'); });
+    sb.addEventListener('click', function (e) {
+      if (e.target.tagName === 'A') sb.classList.remove('open');
+    });
+  }
+
+  // Real-time Search in Cheat Sheet
+  var search = document.getElementById('cheat-search');
+  var cheatTable = document.getElementById('cheat-table');
+  if (search && cheatTable) {
+    search.addEventListener('input', function () {
+      var q = search.value.trim().toLowerCase();
+      cheatTable.querySelectorAll('tbody tr').forEach(function (tr) {
+        var match = tr.innerText.toLowerCase().indexOf(q) > -1;
+        tr.style.display = match ? '' : 'none';
+      });
+    });
+  }
+</script>
+</body>
+</html>
